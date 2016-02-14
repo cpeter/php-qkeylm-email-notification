@@ -1,0 +1,23 @@
+DB:
+  driver: pdo_sqlite
+  path: ../store/store.sqlite3
+Mailer:
+  host: gmail-smtp-in.l.google.com
+  port: 25
+  to: john@doe.com
+  to_name: John Doe
+  from: john@doe.com
+  from_name: John Doe
+  subject: Version number changed
+  body: The version number has change for {cms} to {version_id}. For the changelog check: {url}
+CMS:
+  PyroCMS:
+    version_page: https://codeigniter.pyrocms.com/store/details/pyrocms_professional
+    regexp: |<th>Latest Version</th>.*?<td>(.*?)</td>|s
+    parser: ParserRegexp
+    url: https://codeigniter.pyrocms.com/store/details/pyrocms_professional
+  ModX:
+    version_page: http://modx.com/download/evolution/
+    regexp: |<div class="release_package">.*?<h3>MODX Evolution (.*?)</h3>|s
+    parser: ParserRegexp
+    url: https://codeigniter.pyrocms.com/store/details/pyrocms_professional

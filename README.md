@@ -1,9 +1,9 @@
 # CMS Version Checker
 
-[![Build Status](https://travis-ci.org/cpeter/php-cms-version-checker.svg?branch=master)](https://travis-ci.org/cpeter/php-cms-version-checker)
-[![Latest Stable Version](https://poser.pugx.org/cpeter/php-cms-version-checker/v/stable.svg)](https://packagist.org/packages/cpeter/php-cms-version-checker)
-[![Total Downloads](https://poser.pugx.org/cpeter/php-cms-version-checker/downloads.svg)](https://packagist.org/packages/cpeter/php-cms-version-checker)
-[![License](https://poser.pugx.org/cpeter/php-cms-version-checker/license.svg)](https://packagist.org/packages/cpeter/php-cms-version-checker)
+[![Build Status](https://travis-ci.org/cpeter/php-qkeylm-email-notification.svg?branch=master)](https://travis-ci.org/cpeter/php-qkeylm-email-notification)
+[![Latest Stable Version](https://poser.pugx.org/cpeter/php-qkeylm-email-notification/v/stable.svg)](https://packagist.org/packages/cpeter/php-qkeylm-email-notification)
+[![Total Downloads](https://poser.pugx.org/cpeter/php-qkeylm-email-notification/downloads.svg)](https://packagist.org/packages/cpeter/php-qkeylm-email-notification)
+[![License](https://poser.pugx.org/cpeter/php-qkeylm-email-notification/license.svg)](https://packagist.org/packages/cpeter/php-qkeylm-email-notification)
 
 
 Keep track of new releases for different products ...
@@ -17,7 +17,7 @@ by adding it as a dependency to your project's composer.json file.
 ```json
 {
     "require": {
-        "cpeter/php-cms-version-checker": "*"
+        "cpeter/php-qkeylm-email-notification": "*"
     }
 }
 ```
