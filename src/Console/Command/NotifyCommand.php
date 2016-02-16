@@ -32,10 +32,13 @@ class NotifyCommand extends Command
         $config = $input->getOption('config');
         $configuration = $config ? Configuration::fromFile($config) : Configuration::defaults();
 
-//        $parser = new PhpQkeylmEmailNotification\Parser\Parser();
-//        $storage = PhpQkeylmEmailNotification\Storage::getConnection($configuration->get("DB"));
-//
-//        $alert = PhpQkeylmEmailNotification\Alert::getInstance($configuration->get("Mailer"));
+        $parser = new PhpQkeylmEmailNotification\Parser\Parser();
+        $storage = PhpQkeylmEmailNotification\Storage::getConnection($configuration->get("DB"));
+
+        $alert = PhpQkeylmEmailNotification\Alert::getInstance($configuration->get("Mailer"));
+
+        $options = $configuration->get("QKEYLM");
+        $parser->parse($options);
 //
 //        foreach($configuration->get("CMS") as $cms => $cms_options){
 //            // get version number from the website

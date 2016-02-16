@@ -1,3 +1,14 @@
+QKEYLM:
+  login: peter_csaba@yahoo.com
+  password: 
+  host: https://www.qkenhanced.com.au
+  page_token: /external/Authentication/SignIn?ReturnUrl=/external/
+  page_wsingin: /external/Navigation/Enhanced
+  page_webui: /webui/
+  page_journal: /webui/ProgramJournal/RedirectToPJ?ChildId=13715106&RoomId=3676407
+  child_name: Adel
+  child_id: 13715106
+  room_id: 3676407
 DB:
   driver: pdo_sqlite
   path: ../store/store.sqlite3
@@ -9,15 +20,5 @@ Mailer:
   from: john@doe.com
   from_name: John Doe
   subject: Version number changed
-  body: The version number has change for {cms} to {version_id}. For the changelog check: {url}
-CMS:
-  PyroCMS:
-    version_page: https://codeigniter.pyrocms.com/store/details/pyrocms_professional
-    regexp: |<th>Latest Version</th>.*?<td>(.*?)</td>|s
-    parser: ParserRegexp
-    url: https://codeigniter.pyrocms.com/store/details/pyrocms_professional
-  ModX:
-    version_page: http://modx.com/download/evolution/
-    regexp: |<div class="release_package">.*?<h3>MODX Evolution (.*?)</h3>|s
-    parser: ParserRegexp
-    url: https://codeigniter.pyrocms.com/store/details/pyrocms_professional
+  body: \{body\}
+    
