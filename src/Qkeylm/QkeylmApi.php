@@ -53,7 +53,7 @@ class QkeylmApi
         // get the Auth token 
         $auth_token = $this->getAuthToken($body);
         $post_data = $this->getPostData($auth_token, $this->options['login'], $this->options['password']);
-        
+
         try {
             $res = $client->request('POST', $url, $post_data);
         } catch(RequestException $e){
@@ -94,8 +94,8 @@ class QkeylmApi
     private function getPostData($auth_token, $login, $password){
         return [
             'form_params' => [
-                'Password' => $login,
-                'UserName' => $password,
+                'UserName' => $login,
+                'Password' => $password,
                 '__RequestVerificationToken' => $auth_token
             ],
             'debug' => true,
