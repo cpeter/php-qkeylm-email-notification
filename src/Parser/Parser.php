@@ -20,6 +20,6 @@ class Parser
 
         $qkeylm = new \Cpeter\PhpQkeylmEmailNotification\Qkeylm\QkeylmApi($options);
         $qkeylm->login();
-
+        echo $qkeylm->getDailyJournal();
     }
 }
