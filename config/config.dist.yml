@@ -1,13 +1,13 @@
 QKEYLM:
-  login: xxxxxxxxxxx@yahoo.com
-  password: xxxxxxxxxx
+  login: xxxxxxxxxx@yahoo.com
+  password: xxxxxxxxxxxxxx
   host: https://www.qkenhanced.com.au
   page_token: /external/Authentication/SignIn?ReturnUrl=/external/Navigation/Enhanced
   page_wsingin: /webui/
-  page_journal: /webui/ProgramJournal/RedirectToPJ?ChildId=13715106&RoomId=3676407
-  child_name: Adel
   child_id: 13715106
   room_id: 3676407
+  page_journal: /webui/ProgramJournal/RedirectToPJ?ChildId=13715106&RoomId=3676407
+  child_name: Adel
 DB:
   driver: pdo_sqlite
   path: ../store/store.sqlite3
