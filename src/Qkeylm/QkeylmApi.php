@@ -9,8 +9,6 @@ use voku\helper\HtmlDomParser;
 class QkeylmApi
 {
 
-    private $parsers = array();
-    
     private $options = array();
 
     private $logged_in;
@@ -38,7 +36,7 @@ class QkeylmApi
         
         // fetch url and get the version id
         try {
-            $res = $this->client->get($url, array('verify' => false));
+            $res = $this->client->get($url, ['verify' => false]);
         } catch(RequestException $e){
             $status_code = $e->getCode();
             throw new EmptyUrlException("URL '$url'' returned status code: $status_code. Was expecting 200.");
@@ -48,11 +46,9 @@ class QkeylmApi
         if ($res->getStatusCode() != 200){
             throw new EmptyUrlException("URL '$url'' returned status code: $status_code. Was expecting 200.");
         }
-
-        $body = $res->getBody();
-
+        
         // get the Auth token 
-        $auth_token = $this->getAuthToken($body);
+        $auth_token = $this->getAuthToken($res->getBody());
         $post_data = $this->getPostData($auth_token, $this->options['login'], $this->options['password']);
 
         try {
@@ -66,10 +62,8 @@ class QkeylmApi
         if ($res->getStatusCode() != 200){
             throw new EmptyUrlException("URL '$url'' returned status code: $status_code. Was expecting 200.");
         }
-
-        $body = $res->getBody();
-
-        $wsignin = $this->getWSignInData($body);
+        
+        $wsignin = $this->getWSignInData($res->getBody());
         $post_data = [
             'form_params' => [
                     'wa' => 'wsignin1.0',
@@ -113,7 +107,7 @@ class QkeylmApi
 
         // fetch url and get the version id
         try {
-            $res = $this->client->get($url);
+            $res = $this->client->get($url, ['verify' => false]);
         } catch(RequestException $e){
             $status_code = $e->getCode();
             throw new EmptyUrlException("URL '$url'' returned status code: $status_code. Was expecting 200.");
@@ -164,7 +158,8 @@ class QkeylmApi
                 'UserName' => $login,
                 'Password' => $password,
                 '__RequestVerificationToken' => $auth_token
-            ]
+            ],
+            'verify' => false
         ];
     }
 
