@@ -141,7 +141,7 @@ class QkeylmApi
             '<a href="' . $this->options['host'] . '/webui/Files/Room/large/$1"><img class="image-frame" src="' . $this->options['host'] . '/webui/Files/Room/small/$1"></a>',
             $content);
 
-        return $content;
+        return ['body' => $content];
     }
 
     private function getAuthToken($body)

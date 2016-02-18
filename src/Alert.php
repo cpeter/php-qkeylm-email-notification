@@ -39,7 +39,7 @@ class Alert
     public function send($journal)
     {
 
-        $template_values = array('body' => $journal);
+        $template_values = array('body' => $journal['body']);
         
         // get the values to be sent
         $body = $this->processTemplate($this->config['body'], $template_values);
