@@ -48,7 +48,8 @@ class Alert
         $message = Swift_Message::newInstance($subject)
             ->setFrom(array($this->config['from'] => $this->config['from_name']))
             ->setTo(array($this->config['to']  => $this->config['to_name']))
-            ->setBody($body, 'text/plain')
+            ->setSubject($this->config['subject'])
+            ->setBody($body, 'text/html')
         ;
 
         // Send the message
