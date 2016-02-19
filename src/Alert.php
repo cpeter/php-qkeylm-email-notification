@@ -11,6 +11,8 @@ namespace Cpeter\PhpQkeylmEmailNotification;
 use Swift_SmtpTransport;
 use Swift_Mailer;
 use Swift_Message;
+use Swift_Image;
+use Swift_Attachment;
 
 class Alert 
 {
@@ -42,10 +44,13 @@ class Alert
         $body = $journal['body'];
 
         // Create a message. Here we could use tempaltes if we want to.
-        $message = Swift_Message::newInstance($subject)
+        $message = Swift_Message::newInstance()
             ->setFrom(array($this->config['from'] => $this->config['from_name']))
             ->setTo(array($this->config['to']  => $this->config['to_name']))
             ->setSubject($this->config['subject']);
+
+        $body = $this->embedImages($message, $body, $journal['images']);
+        $this->attachImages($message, $journal['images'], 'large');
 
         // attach images
         $message->setBody($body, 'text/html');
@@ -56,12 +61,24 @@ class Alert
         return $numSent;
     }
     
-    private function processTemplate($template, $variables)
+    private function embedImages(&$message, &$body, $images)
     {
-        foreach ($variables as $key => $value) {
-            $template = str_replace('{'. $key . '}', $value, $template);
+
+        foreach($images as $image_url => $image){
+            $body = str_replace(
+                '<img class="image-frame" src="' . $image_url . '">',
+                $message->embed(Swift_Image::fromPath($image['small'])),
+                $body);
         }
-        return $template;
+
+    }
+
+    private function attachImages(&$message, $images, $size)
+    {
+        foreach($images as $image_url => $image){
+            $date = date("Y-m-d");
+            $message->attach(Swift_Attachment::fromPath($image['large'])->setFilename($date.'-childcare.jpg'));
+        }
     }
     
 }

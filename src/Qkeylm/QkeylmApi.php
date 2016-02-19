@@ -64,10 +64,7 @@ class QkeylmApi
         $url = $this->options['host'].$this->options['page_journal'];
         $res = $this->getUrl($url);
 
-        $body = $res->getBody();
-        $content = $this->extractContent($body);
-
-        return  $content;
+        return $this->extractContent($res->getBody());
     }
 
     public function extractContent($body)
@@ -88,13 +85,13 @@ class QkeylmApi
                 $content['images'][$image]['small'] = $this->fetchImage($image);
                 // generate large image name 
                 $large_image = str_replace('small', 'large', $image);
-                $content['images'][$image]['small'] = $this->fetchImage($large_image);
+                $content['images'][$image]['large'] = $this->fetchImage($large_image);
             }    
         }
 
         $content['body'] = $main_content;
 
-        return ['body' => $content];
+        return  $content;
     }
 
     /**

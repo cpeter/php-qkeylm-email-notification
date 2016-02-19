@@ -47,6 +47,7 @@ class Configuration
      */
     public static function defaults()
     {
+        date_default_timezone_set("Australia/Sydney");
         $configPath = __DIR__ . "/../../config/";
         return self::fromFile(['?'. $configPath . 'config.dist.yml', '?'. $configPath . 'config.yml']);
     }
