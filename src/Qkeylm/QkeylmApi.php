@@ -77,15 +77,7 @@ class QkeylmApi
         $main_content = $html->find('div[id=mainInner]', 0)->outertext;
         $main_content = str_replace($this->options['child_name'], '<strong style="font-size:20px">' . $this->options['child_name'] . '</strong>', $main_content);
         $main_content = str_replace('"/webui/', '"' . $this->options['host'] . '/webui/', $main_content);
-
-        // @todo
-        // images can not be viewed because it will require user login
-        // download images and attach to the email as small and large one, then delete the file
-
-//        $content = preg_replace(
-//            '|<img class="image-frame" src="' . $this->options['host'] . '/webui/Files/Room/small/(.*?)">|',
-//            '<a href="' . $this->options['host'] . '/webui/Files/Room/large/$1"><img class="image-frame" src="' . $this->options['host'] . '/webui/Files/Room/small/$1"></a>',
-//            $content);
+        
         // get all images and download them
         preg_match_all('|<img class="image-frame" src="(' . $this->options['host'] . '/webui/Files/Room/small/.*?)">|', $main_content, $images);
         

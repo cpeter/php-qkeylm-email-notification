@@ -39,18 +39,16 @@ class Alert
     public function send($journal)
     {
 
-        $template_values = array('body' => $journal['body']);
-        
-        // get the values to be sent
-        $body = $this->processTemplate($this->config['body'], $template_values);
+        $body = $journal['body'];
 
         // Create a message. Here we could use tempaltes if we want to.
         $message = Swift_Message::newInstance($subject)
             ->setFrom(array($this->config['from'] => $this->config['from_name']))
             ->setTo(array($this->config['to']  => $this->config['to_name']))
-            ->setSubject($this->config['subject'])
-            ->setBody($body, 'text/html')
-        ;
+            ->setSubject($this->config['subject']);
+
+        // attach images
+        $message->setBody($body, 'text/html');
 
         // Send the message
         $numSent = $this->mailer->send($message);
