@@ -5,6 +5,7 @@ namespace Cpeter\PhpQkeylmEmailNotification\Qkeylm;
 use Cpeter\PhpQkeylmEmailNotification\Exception\EmptyUrlException;
 use GuzzleHttp\Exception\RequestException;
 use voku\helper\HtmlDomParser;
+use Swift_Image;
 
 class QkeylmApi
 {
@@ -30,61 +31,21 @@ class QkeylmApi
     public function login()
     {
         $url = $this->options['host'].$this->options['page_token'];
-        if (empty($url)) {
-            throw new EmptyUrlException("URL must be set. We can not parse empty url.");
-        }
-        
-        // fetch url and get the version id
-        try {
-            $res = $this->client->get($url, ['verify' => false]);
-        } catch(RequestException $e){
-            $status_code = $e->getCode();
-            throw new EmptyUrlException("URL '$url'' returned status code: $status_code. Was expecting 200.");
-        }
+        $res = $this->getUrl($url);
 
-        $status_code = $res->getStatusCode();
-        if ($res->getStatusCode() != 200){
-            throw new EmptyUrlException("URL '$url'' returned status code: $status_code. Was expecting 200.");
-        }
-        
         // get the Auth token 
         $auth_token = $this->getAuthToken($res->getBody());
         $post_data = $this->getPostData($auth_token, $this->options['login'], $this->options['password']);
 
-        try {
-            $res = $this->client->request('POST', $url, $post_data);
-        } catch(RequestException $e){
-            $status_code = $e->getCode();
-            throw new EmptyUrlException("URL '$url'' returned status code: $status_code. Was expecting 200.");
-        }
-
-        $status_code = $res->getStatusCode();
-        if ($res->getStatusCode() != 200){
-            throw new EmptyUrlException("URL '$url'' returned status code: $status_code. Was expecting 200.");
-        }
-        
+        $res = $this->postUrl($url, $post_data);
         $wsignin = $this->getWSignInData($res->getBody());
         $post_data = [
-            'form_params' => [
-                    'wa' => 'wsignin1.0',
-                    'wresult' => $wsignin
-            ],
-            'verify' => false
+            'wa' => 'wsignin1.0',
+            'wresult' => $wsignin
         ];
 
         $url = $this->options['host'].$this->options['page_wsingin'];
-        try {
-            $res = $this->client->request('POST', $url, $post_data);
-        } catch(RequestException $e){
-            $status_code = $e->getCode();
-            throw new EmptyUrlException("URL '$url'' returned status code: $status_code. Was expecting 200.");
-        }
-
-        $status_code = $res->getStatusCode();
-        if ($res->getStatusCode() != 200){
-            throw new EmptyUrlException("URL '$url'' returned status code: $status_code. Was expecting 200.");
-        }
-
+        $res = $this->postUrl($url, $post_data);
         $body = $res->getBody();
         $this->logged_in = strpos($body, "/webui/Account/Logout") !== false;
 
@@ -101,22 +62,7 @@ class QkeylmApi
         }
 
         $url = $this->options['host'].$this->options['page_journal'];
-        if (empty($url)) {
-            throw new EmptyUrlException("URL must be set. We can not parse empty url.");
-        }
-
-        // fetch url and get the version id
-        try {
-            $res = $this->client->get($url, ['verify' => false]);
-        } catch(RequestException $e){
-            $status_code = $e->getCode();
-            throw new EmptyUrlException("URL '$url'' returned status code: $status_code. Was expecting 200.");
-        }
-
-        $status_code = $res->getStatusCode();
-        if ($res->getStatusCode() != 200){
-            throw new EmptyUrlException("URL '$url'' returned status code: $status_code. Was expecting 200.");
-        }
+        $res = $this->getUrl($url);
 
         $body = $res->getBody();
         $content = $this->extractContent($body);
@@ -128,20 +74,96 @@ class QkeylmApi
     {
         // get just the main content
         $html = HtmlDomParser::str_get_html($body);
-        $content = $html->find('div[id=mainInner]', 0)->outertext;
-        $content = str_replace($this->options['child_name'], '<strong style="font-size:20px">' . $this->options['child_name'] . '</strong>', $content);
-        $content = str_replace('"/webui/', '"' . $this->options['host'] . '/webui/', $content);
+        $main_content = $html->find('div[id=mainInner]', 0)->outertext;
+        $main_content = str_replace($this->options['child_name'], '<strong style="font-size:20px">' . $this->options['child_name'] . '</strong>', $main_content);
+        $main_content = str_replace('"/webui/', '"' . $this->options['host'] . '/webui/', $main_content);
 
         // @todo
         // images can not be viewed because it will require user login
         // download images and attach to the email as small and large one, then delete the file
 
-        $content = preg_replace(
-            '|<img class="image-frame" src="' . $this->options['host'] . '/webui/Files/Room/small/(.*?)">|',
-            '<a href="' . $this->options['host'] . '/webui/Files/Room/large/$1"><img class="image-frame" src="' . $this->options['host'] . '/webui/Files/Room/small/$1"></a>',
-            $content);
+//        $content = preg_replace(
+//            '|<img class="image-frame" src="' . $this->options['host'] . '/webui/Files/Room/small/(.*?)">|',
+//            '<a href="' . $this->options['host'] . '/webui/Files/Room/large/$1"><img class="image-frame" src="' . $this->options['host'] . '/webui/Files/Room/small/$1"></a>',
+//            $content);
+        // get all images and download them
+        preg_match_all('|<img class="image-frame" src="(' . $this->options['host'] . '/webui/Files/Room/small/.*?)">|', $main_content, $images);
+        
+        // process the images if there is any
+        $content['images'] = [];
+        if (isset($images[1])){
+            foreach($images[1] as $image){
+                $content['images'][$image]['small'] = $this->fetchImage($image);
+                // generate large image name 
+                $large_image = str_replace('small', 'large', $image);
+                $content['images'][$image]['small'] = $this->fetchImage($large_image);
+            }    
+        }
+
+        $content['body'] = $main_content;
 
         return $content;
+    }
+
+    /**
+     * Since fetching images needs authenticated user we'll need to couple the image processing with this class
+     * 
+     * @param $body
+     * @return string
+     */
+    private function fetchImage($url){
+        
+        if (function_exists('sys_get_temp_dir') && is_writable(sys_get_temp_dir()) && ($tmpFile = tempnam(sys_get_temp_dir(), 'img_'))) {
+            /* We have opened a tmpfile */
+        } else {
+            throw new Exception('Unable to fetch the image to make it attachable, sys_temp_dir is not writable');
+        }
+
+        if (!$this->logged_in){
+            $this->login();
+        }
+
+        $this->getUrl($url, ['save_to' => $tmpFile]);
+
+        return $tmpFile;
+    }
+    
+    private function postUrl($url, $post_data, $options = []){
+        try {
+            $options = array_merge($options, ['verify' => false, 'form_params' => $post_data]);
+            $res = $this->client->request('POST', $url, $options);
+        } catch(RequestException $e){
+            $status_code = $e->getCode();
+            throw new EmptyUrlException("URL '$url'' returned status code: $status_code. Was expecting 200.");
+        }
+
+        $status_code = $res->getStatusCode();
+        if ($res->getStatusCode() != 200){
+            throw new EmptyUrlException("URL '$url'' returned status code: $status_code. Was expecting 200.");
+        }
+        return $res;
+    }
+    
+    private function getUrl($url, $options = []){
+        if (empty($url)) {
+            throw new EmptyUrlException("URL must be set. We can not parse empty url.");
+        }
+
+        // fetch url and get the version id
+        try {
+            $options = array_merge($options, ['verify' => false]);
+            $res = $this->client->get($url, $options);
+        } catch(RequestException $e){
+            $status_code = $e->getCode();
+            throw new EmptyUrlException("URL '$url'' returned status code: $status_code. Was expecting 200.");
+        }
+
+        $status_code = $res->getStatusCode();
+        if ($res->getStatusCode() != 200){
+            throw new EmptyUrlException("URL '$url'' returned status code: $status_code. Was expecting 200.");
+        }
+        
+        return $res;
     }
 
     private function getAuthToken($body)
@@ -154,12 +176,9 @@ class QkeylmApi
     private function getPostData($auth_token, $login, $password)
     {
         return [
-            'form_params' => [
-                'UserName' => $login,
-                'Password' => $password,
-                '__RequestVerificationToken' => $auth_token
-            ],
-            'verify' => false
+            'UserName' => $login,
+            'Password' => $password,
+            '__RequestVerificationToken' => $auth_token
         ];
     }
 
