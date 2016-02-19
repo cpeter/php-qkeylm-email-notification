@@ -102,7 +102,7 @@ class QkeylmApi
 
         $content['body'] = $main_content;
 
-        return $content;
+        return ['body' => $content];
     }
 
     /**

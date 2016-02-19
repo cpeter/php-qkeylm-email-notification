@@ -36,20 +36,20 @@ class Alert
         return static::$instance;
     }
     
-    public function send($cms, $version_id, $url)
+    public function send($journal)
     {
 
-        $template_values = array('cms' => $cms, 'version_id' => $version_id, 'url' => $url);
+        $template_values = array('body' => $journal['body']);
         
         // get the values to be sent
-        $subject = $this->processTemplate($this->config['subject'], $template_values);
         $body = $this->processTemplate($this->config['body'], $template_values);
 
         // Create a message. Here we could use tempaltes if we want to.
         $message = Swift_Message::newInstance($subject)
             ->setFrom(array($this->config['from'] => $this->config['from_name']))
             ->setTo(array($this->config['to']  => $this->config['to_name']))
-            ->setBody($body)
+            ->setSubject($this->config['subject'])
+            ->setBody($body, 'text/html')
         ;
 
         // Send the message

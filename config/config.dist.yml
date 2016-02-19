@@ -12,12 +12,12 @@ DB:
   driver: pdo_sqlite
   path: ../store/store.sqlite3
 Mailer:
-  host: gmail-smtp-in.l.google.com
+  host: localhost
   port: 25
-  to: john@doe.com
-  to_name: John Doe
-  from: john@doe.com
-  from_name: John Doe
-  subject: Version number changed
-  body: \{body\}
+  to: peter_csaba@yahoo.com
+  to_name: Csaba Peter
+  from: peter_csaba@yahoo.com
+  from_name: Csaba Peter
+  subject: Tiny Tots Daily Journal
+  body:  Body {body}
     
