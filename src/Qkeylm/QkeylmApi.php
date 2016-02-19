@@ -89,6 +89,7 @@ class QkeylmApi
             }    
         }
 
+        $main_content = $this->addStyles($main_content);
         $content['body'] = $main_content;
 
         return  $content;
@@ -176,5 +177,26 @@ class QkeylmApi
         // wsignin data
         preg_match('/wresult" value="(.*?)"/', $body, $match);
         return isset($match['1']) ?  html_entity_decode($match['1']) : '';
+    }
+
+    private function addStyles($html){
+
+        // hacking some style to the body.
+        $html .= "<style>
+.gaurav_ratiocinative_main_pic_gallery ul  {
+  	list-style-type: none;
+    margin: 0;
+    padding: 0;
+};
+li {
+    float: left;
+    margin-right: 10px;
+}
+li:last-child {
+    float:none;
+}
+</style>";
+
+        return $html;
     }
 }

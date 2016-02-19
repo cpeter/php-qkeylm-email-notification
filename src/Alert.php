@@ -63,22 +63,21 @@ class Alert
     
     private function embedImages(&$message, &$body, $images)
     {
-
         foreach($images as $image_url => $image){
             $body = str_replace(
-                '<img class="image-frame" src="' . $image_url . '">',
+                $image_url,
                 $message->embed(Swift_Image::fromPath($image['small'])),
                 $body);
         }
-
     }
 
     private function attachImages(&$message, $images, $size)
     {
+        $img_nr = 0;
         foreach($images as $image_url => $image){
             $date = date("Y-m-d");
             $ext = pathinfo($image_url, PATHINFO_EXTENSION);
-            $message->attach(Swift_Attachment::fromPath($image['large'])->setFilename( $date . '-childcare.' . $ext ));
+            $message->attach(Swift_Attachment::fromPath($image['large'])->setFilename( $date . '-'. ++$img_nr . '-childcare.' . $ext ));
         }
     }
     

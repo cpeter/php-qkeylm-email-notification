@@ -45,7 +45,6 @@ class NotifyCommand extends Command
         }catch(Swift_TransportException $e){
             $output->writeln("Mail notification was not sent. ". $e->getMessage());
         }
-        print_r($journal);
 //
 //        foreach($configuration->get("CMS") as $cms => $cms_options){
 //            // get version number from the website
