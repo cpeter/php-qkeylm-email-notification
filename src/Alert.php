@@ -49,7 +49,7 @@ class Alert
             ->setTo(array($this->config['to']  => $this->config['to_name']))
             ->setSubject($this->config['subject']);
 
-        $body = $this->embedImages($message, $body, $journal['images']);
+        $this->embedImages($message, $body, $journal['images']);
         $this->attachImages($message, $journal['images'], 'large');
 
         // attach images
@@ -77,7 +77,8 @@ class Alert
     {
         foreach($images as $image_url => $image){
             $date = date("Y-m-d");
-            $message->attach(Swift_Attachment::fromPath($image['large'])->setFilename($date.'-childcare.jpg'));
+            $ext = pathinfo($image_url, PATHINFO_EXTENSION);
+            $message->attach(Swift_Attachment::fromPath($image['large'])->setFilename( $date . '-childcare.' . $ext ));
         }
     }
     
