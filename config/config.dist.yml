@@ -23,7 +23,7 @@ Mailer:
     - XXXX XXXXX
     - YYYY YYYYYY
   from: xxxxxxxxxx@yahoo.com
-  from_name: Tiny Tots Daily Journal
+  from_name: Tiny Tots
   to: xxxxxxxxxx@yahoo.com
-  to_name: XXXX XXXXX
+  to_name: Tiny Tots
   subject: Tiny Tots Daily Journal
