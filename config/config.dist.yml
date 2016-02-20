@@ -7,16 +7,21 @@ QKEYLM:
   child_id: 13715106
   room_id: 3676407
   page_journal: /webui/ProgramJournal/RedirectToPJ?ChildId=13715106&RoomId=3676407
-  child_name: Adel
+  child_name:
+    - Adel
+    - Oliver
 DB:
   driver: pdo_sqlite
   path: ../store/store.sqlite3
 Mailer:
   host: localhost
   port: 25
-  to: peter_csaba@yahoo.com
-  to_name: Csaba Peter
-  from: peter_csaba@yahoo.com
-  from_name: Csaba Peter
+  to:
+    - xxxxxxxx@yahoo.com
+    - yyyyyyyyyyyy@gmail.com
+  to_name:
+    - XXXX XXXXX
+    - YYYY YYYYYY
+  from: xxxxxxxxxx@yahoo.com
+  from_name: XXXX XXXXX
   subject: Tiny Tots Daily Journal
-    

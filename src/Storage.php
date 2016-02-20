@@ -22,22 +22,21 @@ class Storage
         return static::$instance;
     }
 
-    public function getVersion($cms)
+    public function checkEntry($date)
     {
         // Fetch column as scalar value
-        $sth = $this->conn->prepare("SELECT version FROM versions WHERE name = :name");
-        $sth->bindValue(":name", $cms);
+        $sth = $this->conn->prepare("SELECT date FROM journals WHERE date =:date");
+        $sth->bindValue(":date", $date);
         $sth->execute();
-        $version = $sth->fetchColumn();
+        $date = $sth->fetchColumn();
 
-        return $version;
+        return !empty($date);
     }
 
-    public function putVersion($cms, $version)
+    public function setLatestEntry($date)
     {
-        $sth = $this->conn->prepare("REPLACE  INTO versions (name, version) VALUES (:name, :version)");
-        $sth->bindValue(":name", $cms);
-        $sth->bindValue(":version", $version);
+        $sth = $this->conn->prepare("REPLACE INTO journals (date) VALUES (:date)");
+        $sth->bindValue(":date", $date);
         $sth->execute();
     }
 

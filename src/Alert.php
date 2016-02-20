@@ -46,8 +46,14 @@ class Alert
         // Create a message. Here we could use tempaltes if we want to.
         $message = Swift_Message::newInstance()
             ->setFrom(array($this->config['from'] => $this->config['from_name']))
-            ->setTo(array($this->config['to']  => $this->config['to_name']))
             ->setSubject($this->config['subject']);
+
+        // build mail to
+        $mail_to = [];
+        foreach($this->config['to'] as $id => $to){
+            $mail_to = array_merge($mail_to, [ $to => $this->config['to_name'][$id] ]);
+        }
+        $message->setTo($mail_to);
 
         $this->embedImages($message, $body, $journal['images']);
         $this->attachImages($message, $journal['images'], 'large');

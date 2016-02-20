@@ -5,7 +5,6 @@ namespace Cpeter\PhpQkeylmEmailNotification\Qkeylm;
 use Cpeter\PhpQkeylmEmailNotification\Exception\EmptyUrlException;
 use GuzzleHttp\Exception\RequestException;
 use voku\helper\HtmlDomParser;
-use Swift_Image;
 
 class QkeylmApi
 {
@@ -72,7 +71,7 @@ class QkeylmApi
         // get just the main content
         $html = HtmlDomParser::str_get_html($body);
         $main_content = $html->find('div[id=mainInner]', 0)->outertext;
-        $main_content = str_replace($this->options['child_name'], '<strong style="font-size:20px">' . $this->options['child_name'] . '</strong>', $main_content);
+        $main_content = $this->highlightChildName($this->options['child_name'], $main_content);
         $main_content = str_replace('"/webui/', '"' . $this->options['host'] . '/webui/', $main_content);
         
         // get all images and download them
@@ -91,6 +90,12 @@ class QkeylmApi
 
         $main_content = $this->addStyles($main_content);
         $content['body'] = $main_content;
+
+//        // get the date the journal is from
+        $date = $html->find('div[class=head-dailyjournal-txt]', 0)->innertext;
+        // remove some extra content
+        $date = preg_replace("|(\d{4}).*$|", "$1", $date);
+        $content['date'] = date("Y-m-d", strtotime(trim($date)));
 
         return  $content;
     }
@@ -179,24 +184,24 @@ class QkeylmApi
         return isset($match['1']) ?  html_entity_decode($match['1']) : '';
     }
 
-    private function addStyles($html){
+    private function highlightChildName($child_names, $body)
+    {
+        if (!is_array($child_names)){
+            $child_names = [$child_names];
+        }
+        foreach($child_names as $child_name){
+            $body = str_replace($child_name, '<strong style="font-size:20px">' . $child_name . '</strong>', $body);
+        }
 
+        return $body;
+    }
+
+    private function addStyles($html)
+    {
         // hacking some style to the body.
-        $html .= "<style>
-.gaurav_ratiocinative_main_pic_gallery ul  {
-  	list-style-type: none;
-    margin: 0;
-    padding: 0;
-};
-li {
-    float: left;
-    margin-right: 10px;
-}
-li:last-child {
-    float:none;
-}
-</style>";
-
+        $html = str_replace('class="programjournal-smallimg"', 'style="float: left; margin-right: 10px"', $html);
+        $html = str_replace('class="gaurav_ratiocinative_main_pic_gallery-smallimg"', 'style="float: none; clear: both"', $html);
+        $html = str_replace('<ul>', '<ul style="list-style-type: none;  margin: 0; padding: 0;">', $html);
         return $html;
     }
 }
