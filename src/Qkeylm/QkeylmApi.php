@@ -118,7 +118,7 @@ class QkeylmApi
             $this->login();
         }
 
-        $this->getUrl($url, ['save_to' => $tmpFile . ".png"]);
+        $this->getUrl($url, ['save_to' => $tmpFile]);
 
         return $tmpFile;
     }
