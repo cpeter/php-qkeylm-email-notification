@@ -83,6 +83,7 @@ class Alert
         foreach($images as $image_url => $image){
             $date = date("Y-m-d");
             $ext = pathinfo($image_url, PATHINFO_EXTENSION);
+            $ext = 'png';
             $message->attach(Swift_Attachment::fromPath($image['large'])->setFilename( $date . '-'. ++$img_nr . '-childcare.' . $ext ));
         }
     }
