@@ -16,12 +16,14 @@ DB:
 Mailer:
   host: localhost
   port: 25
-  to:
+  bcc:
     - xxxxxxxx@yahoo.com
     - yyyyyyyyyyyy@gmail.com
-  to_name:
+  bcc_name:
     - XXXX XXXXX
     - YYYY YYYYYY
   from: xxxxxxxxxx@yahoo.com
-  from_name: XXXX XXXXX
+  from_name: Tiny Tots Daily Journal
+  to: xxxxxxxxxx@yahoo.com
+  to_name: XXXX XXXXX
   subject: Tiny Tots Daily Journal
