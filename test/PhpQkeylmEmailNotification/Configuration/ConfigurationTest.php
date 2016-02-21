@@ -20,7 +20,7 @@ class ConfigurationTest extends TestCase
     public function testDefaults()
     {
         $configuration = Configuration::defaults();
-        $config = $configuration->get("CMS");
+        $config = $configuration->get("QKEYLM");
         $this->assertTrue(is_array($config) && !empty($config));
     }
 
@@ -32,7 +32,6 @@ class ConfigurationTest extends TestCase
     {
         $configuration = Configuration::defaults();
         $config = $configuration->get('invalid', 'default');
-        print_r($config);
         $this->assertTrue($config == 'default');
     }
 }

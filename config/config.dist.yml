@@ -27,3 +27,4 @@ Mailer:
   to: xxxxxxxxxx@yahoo.com
   to_name: Tiny Tots
   subject: Tiny Tots Daily Journal
+TimeZone: Australia/Sydney

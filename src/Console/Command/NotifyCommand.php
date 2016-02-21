@@ -36,6 +36,8 @@ class NotifyCommand extends Command
         $storage = PhpQkeylmEmailNotification\Storage::getConnection($configuration->get("DB"));
         $alert = PhpQkeylmEmailNotification\Alert::getInstance($configuration->get("Mailer"));
 
+        date_default_timezone_set($configuration->get("TimeZone", "Australia/Sydney"));
+
         $date = date("Y-m-d");
 
         // check if current date was already processed
