@@ -50,5 +50,4 @@ class Configuration
         $configPath = __DIR__ . "/../../config/";
         return self::fromFile(['?'. $configPath . 'config.dist.yml', '?'. $configPath . 'config.yml']);
     }
-    
 }
