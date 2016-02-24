@@ -20,7 +20,12 @@ class NotifyCommand extends Command
             ->setName('notify')
             ->setDescription('Checks the Qkeylm (childcare) portal and send an email notification of the daily journal')
             ->setDefinition([
-                new InputOption('config', null, InputOption::VALUE_REQUIRED, 'A configuration file to configure php-qkeylm-email-notification')
+                new InputOption(
+                    'config',
+                    null,
+                    InputOption::VALUE_REQUIRED,
+                    'A configuration file to configure php-qkeylm-email-notification'
+                )
             ]);
     }
 
@@ -43,22 +48,22 @@ class NotifyCommand extends Command
         // check if current date was already processed
         $date_already_processed = $storage->checkEntry($date);
 
-        if ($date_already_processed){
+        if ($date_already_processed) {
             // already processed
             $output->writeln('Page was already processed today. Giving up now.');
         }
 
-        if (!$date_already_processed){
+        if (!$date_already_processed) {
             $journal = $qkeylm->getDailyJournal();
 
             // send notification and save processed status only if the returned journal is for today
-            if ($journal['date'] == $date){
+            if ($journal['date'] == $date) {
                 $storage->setLatestEntry($date);
                 $output->writeln('Sending the notification.');
-                try{
+                try {
                     // send out notification about the version change
                     $alert->send($journal);
-                }catch(Swift_TransportException $e){
+                } catch (Swift_TransportException $e) {
                     $output->writeln("Mail notification was not sent. ". $e->getMessage());
                 }
             } else {
@@ -68,7 +73,10 @@ class NotifyCommand extends Command
 
         $duration = microtime(true) - $startTime;
         $output->writeln('');
-        $output->writeln('Time: ' . round($duration, 3) . ' seconds, Memory: ' . round(memory_get_peak_usage() / 1024 / 1024, 3) . ' MB');
+        $output->writeln(
+            'Time: ' . round($duration, 3) .
+            ' seconds, Memory: ' . round(memory_get_peak_usage() / 1024 / 1024, 3) .
+            ' MB'
+        );
     }
-    
 }

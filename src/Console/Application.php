@@ -19,7 +19,7 @@ class Application extends SymfonyApplication
      *
      * @see \PCs\PhpQkeylmEmailNotification\Test\DummyTest
      */
-    public function autoloaded()
+    public function autoloaded ()
     {
         return   true;
     }
@@ -40,5 +40,4 @@ class Application extends SymfonyApplication
         $commands[] = $this->add(new NotifyCommand());
         return $commands;
     }
-    
 }

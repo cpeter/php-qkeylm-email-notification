@@ -84,7 +84,7 @@ class Alert
             $date = date("Y-m-d");
             $ext = pathinfo($image_url, PATHINFO_EXTENSION);
             $message->attach(
-                Swift_Attachment::fromPath($image['large'])->setFilename($date . '-'. ++$img_nr . '-childcare.' . $ext)
+                Swift_Attachment::fromPath($image[$size])->setFilename($date . '-'. ++$img_nr . '-childcare.' . $ext)
             );
         }
     }

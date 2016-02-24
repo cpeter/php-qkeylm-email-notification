@@ -2,7 +2,7 @@
 
 namespace Cpeter\PhpQkeylmEmailNotification;
 
-class Storage 
+class Storage
 {
 
     protected static $instance;
@@ -44,7 +44,8 @@ class Storage
      * Protected constructor to prevent creating a new instance of the
      * *Singleton* via the `new` operator from outside of this class.
      */
-    protected  function __construct(){
+    protected function __construct()
+    {
     }
 
     /**
