@@ -14,6 +14,9 @@ use Swift_TransportException;
 class NotifyCommand extends Command
 {
 
+    /**
+     * Define the command name associated with this class (notify) and the optional input commands (config)
+     */
     protected function configure()
     {
         $this
@@ -29,6 +32,16 @@ class NotifyCommand extends Command
             ]);
     }
 
+    /**
+     * Check if we have already processed the daily journal for today
+     * If not login to the qkeylm site and download the journal
+     * Download all images
+     * Send out the notification email with the images as attachement
+     * Mark journal as processed
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $startTime = microtime(true);
