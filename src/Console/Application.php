@@ -3,8 +3,6 @@
 namespace Cpeter\PhpQkeylmEmailNotification\Console;
 
 use Symfony\Component\Console\Application as SymfonyApplication;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 use Cpeter\PhpQkeylmEmailNotification\Console\Command\NotifyCommand;
 
 class Application extends SymfonyApplication
@@ -23,17 +21,30 @@ class Application extends SymfonyApplication
     {
         return   true;
     }
-    
+
+    /**
+     * Application constructor.
+     */
     public function __construct()
     {
         parent::__construct('PHP Qkeylm email notification', self::VERSION);
     }
-    
+
+    /**
+     * Display the app help page
+     *
+     * @return string
+     */
     public function getHelp()
     {
         return parent::getHelp();
     }
-    
+
+    /**
+     * Add all my commands to the application
+     *
+     * @return array|\Symfony\Component\Console\Command\Command[]
+     */
     protected function getDefaultCommands()
     {
         $commands = parent::getDefaultCommands();
