@@ -180,10 +180,10 @@ class QkeylmApi
     }
 
     /**
-     *  
+     *  Send a post http request. Verify ssl cert is turned off
      *
-     * @param $url
-     * @param $post_data
+     * @param string $url
+     * @param array $post_data
      * @param array $config
      * @return mixed|\Psr\Http\Message\ResponseInterface
      * @throws EmptyUrlException
@@ -204,7 +204,15 @@ class QkeylmApi
         }
         return $res;
     }
-    
+
+    /**
+     * Send a GET http request
+     *
+     * @param string $url
+     * @param array $config
+     * @return \Psr\Http\Message\ResponseInterface
+     * @throws EmptyUrlException
+     */
     private function getUrl($url, $config = [])
     {
         if (empty($url)) {
@@ -228,13 +236,27 @@ class QkeylmApi
         return $res;
     }
 
+    /**
+     * Parse the content body and return the authentification token (crumb)
+     *
+     * @param string $body
+     * @return string
+     */
     private function getAuthToken($body)
     {
         // get the Auth token
         preg_match('/name="__RequestVerificationToken" type="hidden" value="(.*?)"/', $body, $match);
         return isset($match['1']) ? $match['1'] : '';
     }
-    
+
+    /**
+     * Prepare the post data for the login page.
+     *
+     * @param string $auth_token
+     * @param string $login
+     * @param string $password
+     * @return array
+     */
     private function getPostData($auth_token, $login, $password)
     {
         return [
@@ -244,6 +266,12 @@ class QkeylmApi
         ];
     }
 
+    /**
+     * Get the WSignIn security challange block
+     *
+     * @param string $body
+     * @return string
+     */
     private function getWSignInData($body)
     {
         // wsignin data
@@ -251,6 +279,13 @@ class QkeylmApi
         return isset($match['1']) ?  html_entity_decode($match['1']) : '';
     }
 
+    /**
+     * Process the body and highlight the child names with inline styles
+     *
+     * @param array $child_names
+     * @param string $body
+     * @return string
+     */
     private function highlightChildName($child_names, $body)
     {
         if (!is_array($child_names)) {
@@ -263,6 +298,12 @@ class QkeylmApi
         return $body;
     }
 
+    /**
+     * Add inline styles to format the content for email view
+     *
+     * @param string $html
+     * @return string
+     */
     private function addStyles($html)
     {
         // hacking some style to the body.

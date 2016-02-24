@@ -2,12 +2,35 @@
 
 namespace Cpeter\PhpQkeylmEmailNotification;
 
+/**
+ * Class Storage
+ *
+ * Store the last date the data was retrieved successfully.
+ * @todo store the email body in the DB as well, and annotate the journals that have the child names in the.
+ * @todo nosql (mongodb) storage could be used
+ *
+ * @package Cpeter\PhpQkeylmEmailNotification
+ */
 class Storage
 {
 
+    /**
+     * @var Storage
+     */
     protected static $instance;
+
+    /**
+     * @var \Doctrine\DBAL\DriverManager
+     */
     protected $conn;
-    
+
+    /**
+     * Get a singleton connection to the DB
+     *
+     * @param array $connectionParams
+     * @return Storage
+     * @throws \Doctrine\DBAL\DBALException
+     */
     public static function getConnection($connectionParams)
     {
         if (self::$instance == null) {
@@ -22,6 +45,12 @@ class Storage
         return static::$instance;
     }
 
+    /**
+     * Check the existance of the date in the DB
+     *
+     * @param string $date
+     * @return bool
+     */
     public function checkEntry($date)
     {
         // Fetch column as scalar value
@@ -33,6 +62,11 @@ class Storage
         return !empty($date);
     }
 
+    /**
+     * Store the date in the DB
+     *
+     * @param string $date
+     */
     public function setLatestEntry($date)
     {
         $sth = $this->conn->prepare("REPLACE INTO journals (date) VALUES (:date)");
