@@ -122,6 +122,7 @@ class Alert
         foreach ($images as $image_url => $image) {
             $date = date("Y-m-d");
             $ext = pathinfo($image_url, PATHINFO_EXTENSION);
+            $ext = "png"; // while qkeylm fixes on their site the extension mismatch. They display jpg for png images
             $message->attach(
                 Swift_Attachment::fromPath($image[$size])->setFilename($date . '-'. ++$img_nr . '-childcare.' . $ext)
             );
