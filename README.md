@@ -1,17 +1,17 @@
-# CMS Version Checker
+# Qkeylm Email Notifier
 
 [![Build Status](https://travis-ci.org/cpeter/php-qkeylm-email-notification.svg?branch=master)](https://travis-ci.org/cpeter/php-qkeylm-email-notification)
 [![Latest Stable Version](https://poser.pugx.org/cpeter/php-qkeylm-email-notification/v/stable.svg)](https://packagist.org/packages/cpeter/php-qkeylm-email-notification)
 [![Total Downloads](https://poser.pugx.org/cpeter/php-qkeylm-email-notification/downloads.svg)](https://packagist.org/packages/cpeter/php-qkeylm-email-notification)
 [![License](https://poser.pugx.org/cpeter/php-qkeylm-email-notification/license.svg)](https://packagist.org/packages/cpeter/php-qkeylm-email-notification)
 
-
-Keep track of new releases for different products ...
-
+Qkeylm is a portal for child cares. Unfortunately they don't offer email notifications for their daily journals. 
+This script will fetch the data directly from the website and send out via email. Since the images are protected as well
+the script will download and attach these ones.
 
 ## Installation
 
-CMS Version Checker can be installed with [Composer](http://getcomposer.org)
+Qkeylm Email Notifier can be installed with [Composer](http://getcomposer.org)
 by adding it as a dependency to your project's composer.json file.
 
 ```json
