@@ -17,6 +17,9 @@ class QkeylmTest extends TestCase
     
     /**
      * Check config object
+     * 
+     * Get a private property
+     * 
      * @covers Cpeter\PhpQkeylmEmailNotification\Qkeylm\QkeylmApi::__construct
      */
     public function testConfigObjAfterInit()
@@ -33,15 +36,29 @@ class QkeylmTest extends TestCase
 
     /**
      * Check default value works
+     * 
+     * Mock a method
+     * 
      * @covers Cpeter\PhpQkeylmEmailNotification\Configuration\Configuration::get
      */
-    public function testGet()
+    public function testGetDailyJournal()
     {
-//        $configuration = Configuration::defaults();
-//        $config = $configuration->get('invalid', 'default');
-//        $this->assertTrue($config == 'default');
+        $mock = M::mock('QkeylmApi');
+        $mock->
     }
 
+    /**
+     * Check authToken extraction
+     * 
+     * @covers Cpeter\PhpQkeylmEmailNotification\Configuration\Configuration::getAuthToken
+     */
+    public function testGetAuthToken()
+    {
+        $qkeylm_api = new QkeylmApi(['host' => 'http://www.host.org']);
+        $token = $this->invokeMethod($qkeylm_api, 'getAuthToken', ['name="__RequestVerificationToken" type="hidden" value="MyToken1234"']);
+        $this->assertTrue($token == 'MyToken1234');
+    }
+    
     /**
      * getPrivateProperty
      *
@@ -56,4 +73,28 @@ class QkeylmTest extends TestCase
 
         return $property;
     }
+
+    /**
+     * Call protected/private method of a class.
+     *
+     * @param object &$object    Instantiated object that we will run method on.
+     * @param string $methodName Method name to call
+     * @param array  $parameters Array of parameters to pass into method.
+     *
+     * @return mixed Method return.
+     */
+    public function invokeMethod(&$object, $methodName, array $parameters = array())
+    {
+        $reflection = new \ReflectionClass(get_class($object));
+        $method = $reflection->getMethod($methodName);
+        $method->setAccessible(true);
+
+        return $method->invokeArgs($object, $parameters);
+    }
+
+    public function tearDown()
+    {
+        M::close();
+    }
+    
 }
