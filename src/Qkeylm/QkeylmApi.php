@@ -42,15 +42,22 @@ class QkeylmApi
     public function __construct($config)
     {
         $this->config = $config;
+
         // http client
-        $this->client = new \GuzzleHttp\Client(
-            [
-                'cookies' => true,
-                'headers' => [
-                    'Referer'   => $this->config['host']
-                ]
+        $client_config = [
+            'cookies' => true,
+            'headers' => [
+                'Referer'   => $this->config['host']
             ]
-        );
+        ];
+
+        // if handler is specified inject into the client
+        // this will be handy for unit testing without hitting the remote api
+        if (!empty($this->config['handler'])){
+            $client_config['handler'] = $this->config['handler'];
+        }
+
+        $this->client = new \GuzzleHttp\Client($client_config);
     }
 
     /**

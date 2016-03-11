@@ -6,15 +6,16 @@ use Mockery as m;
 use Cpeter\PhpQkeylmEmailNotification\Qkeylm\QkeylmApi;
 use Cpeter\PhpQkeylmEmailNotification\Test\TestCase;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Exception\RequestException;
+
 class QkeylmTest extends TestCase
 {
 
-//$mock = M::mock('Engineering');
-//$mock->shouldReceive('disengageWarp')->once()->ordered();
-//$mock->shouldReceive('divertPower')->with(0.40, 'sensors')->once()->ordered();
-//$mock->shouldReceive('divertPower')->with(0.30, 'auxengines')->once()->ordered();
-//$mock->shouldReceive('runDiagnosticLevel')->with(1)->once()->ordered();
-    
     /**
      * Check config object
      * 
@@ -37,20 +38,53 @@ class QkeylmTest extends TestCase
     /**
      * Check default value works
      * 
-     * Mock a method
+     * Mock a method of the class and mock the http client handler
      * 
-     * @covers Cpeter\PhpQkeylmEmailNotification\Configuration\Configuration::get
+     * @covers Cpeter\PhpQkeylmEmailNotification\Qkeylm\QkeylmApi::getDailyJournal
      */
     public function testGetDailyJournal()
     {
-        $mock = M::mock('QkeylmApi');
-        $mock->
+
+        // Create a mock and queue two responses.
+        $mock = new MockHandler([
+            new Response(200, ['X-Foo' => 'Bar'],
+                '<div id="mainInner">
+                    <img class="image-frame" src="http://www.host.org/webui/Files/Room/small/my/image.jpg">
+                </div>
+                <div  class="head-dailyjournal-txt">
+                    Friday, 11 March 2016  Summary
+                    Daily Journal
+                </div>
+                '
+            ),
+            new Response(200, ['Content-Length' => 0]),
+            new Response(200, ['Content-Length' => 0])
+        ]);
+
+        $handler = HandlerStack::create($mock);
+
+        $mock = M::mock('Cpeter\PhpQkeylmEmailNotification\Qkeylm\QkeylmApi[login]', [
+            [
+                'host' => 'http://www.host.org',
+                'page_journal' => '/journal_page',
+                'child_name' => 'Adel',
+                'handler' => $handler
+            ]
+        ]);
+        $mock->shouldReceive('login')->andReturn(true);
+
+        $journal =  $mock->getDailyJournal();
+
+        $this->assertTrue(isset($journal['images']['http://www.host.org/webui/Files/Room/small/my/image.jpg']));
+        $this->assertTrue(isset($journal['body']));
+        $this->assertTrue($journal['date'] == '2016-03-11');
+
     }
 
     /**
      * Check authToken extraction
      * 
-     * @covers Cpeter\PhpQkeylmEmailNotification\Configuration\Configuration::getAuthToken
+     * @covers Cpeter\PhpQkeylmEmailNotification\Qkeylm\QkeylmApi::getAuthToken
      */
     public function testGetAuthToken()
     {
