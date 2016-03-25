@@ -7,6 +7,7 @@ QKEYLM:
   child_id: 13715106
   room_id: 3676407
   page_journal: /webui/ProgramJournal/RedirectToPJ?ChildId=13715106&RoomId=3676407
+  page_journal_date: /webui/ProgramJournal/PrintView?date=
   child_name:
     - Adel
     - Oliver
