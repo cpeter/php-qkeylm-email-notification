@@ -115,8 +115,8 @@ class QkeylmApi
             $date = date("Y-m-d");
         }
         $url = $this->config['host'].$this->config['page_journal_date'].$date;
-        $res = $this->getUrl($url);
 
+        $res = $this->getUrl($url);
         return $this->extractContent($res->getBody());
     }
 
