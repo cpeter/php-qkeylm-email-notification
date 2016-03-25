@@ -97,18 +97,26 @@ class QkeylmApi
      * Fetch the daily journal.
      *
      * @todo upon request this methos could be improved to accept a date the journal to be fetched from
+     * @param string $date
      * @return mixed
      * @throws EmptyUrlException
      */
-    public function getDailyJournal()
+    public function getDailyJournal($date = '')
     {
         if (!$this->logged_in) {
             $this->login();
         }
 
+        // fetch the journal page in order to be able to fetch the print page
         $url = $this->config['host'].$this->config['page_journal'];
-        $res = $this->getUrl($url);
+        $this->getUrl($url);
 
+        if (empty($date)){
+            $date = date("Y-m-d");
+        }
+        $url = $this->config['host'].$this->config['page_journal_date'].$date;
+
+        $res = $this->getUrl($url);
         return $this->extractContent($res->getBody());
     }
 
@@ -124,17 +132,20 @@ class QkeylmApi
     {
         // get just the main content
         $html = HtmlDomParser::str_get_html($body);
-        $main_content = $html->find('div[id=mainInner]', 0)->outertext;
+        // daily journal page div[id=mainInner]
+        $main_content = $html->find('body>div', 0)->outertext;
         $main_content = $this->highlightChildName($this->config['child_name'], $main_content);
+        // embed the small image in the email
+        $main_content = str_replace("/webui/Files/Room/large/", "/webui/Files/Room/small/", $main_content);
         $main_content = str_replace('"/webui/', '"' . $this->config['host'] . '/webui/', $main_content);
         
         // get all images and download them
         preg_match_all(
-            '|<img class="image-frame" src="(' . $this->config['host'] . '/webui/Files/Room/small/.*?)">|',
+            '|<img class="image-frame" src="(' . $this->config['host'] . '/webui/Files/Room/small/.*?)".*?>|',
             $main_content,
             $images
         );
-        
+
         // process the images if there is any
         $content['images'] = [];
         if (isset($images[1])) {
@@ -151,7 +162,8 @@ class QkeylmApi
         $content['body'] = $main_content;
 
         // get the date the journal is from
-        $date = $html->find('div[class=head-dailyjournal-txt]', 0)->innertext;
+        // daily journal selector: div[class=head-dailyjournal-txt]
+        $date = $html->find('h1', 0)->innertext;
         // remove some extra content
         $date = preg_replace("|(\d{4}).*$|", "$1", $date);
         $content['date'] = date("Y-m-d", strtotime(trim($date)));
@@ -313,7 +325,7 @@ class QkeylmApi
      */
     private function addStyles($html)
     {
-        // hacking some style to the body.
+        // hacking some style to the body for journal page
         $html = str_replace('class="programjournal-smallimg"', 'style="float: left; margin-right: 10px"', $html);
         $html = str_replace(
             'class="gaurav_ratiocinative_main_pic_gallery-smallimg"',
@@ -321,6 +333,19 @@ class QkeylmApi
             $html
         );
         $html = str_replace('<ul>', '<ul style="list-style-type: none;  margin: 0; padding: 0;">', $html);
+
+        // hacking some style to the *print* body for yournal page
+        $html = str_replace('class="detailcontRes"', 'style="float: left; margin-right: 10px"', $html);
+        $html = str_replace(
+            'class="ratiocinative_pic_gallery"',
+            'style="float: none; clear: both"',
+            $html
+        );
+        $html = str_replace(
+            '<ul class=&#39;img-listview&#39;>',
+            '<ul style="list-style-type: none;  margin: 0; padding: 0;">',
+            $html
+        );
         return $html;
     }
 }

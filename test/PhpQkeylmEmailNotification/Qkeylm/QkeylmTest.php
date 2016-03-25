@@ -45,16 +45,20 @@ class QkeylmTest extends TestCase
     public function testGetDailyJournal()
     {
 
-        // Create a mock and queue two responses.
+        // Create a mock and queue a few responses.
         $mock = new MockHandler([
+            new Response(200, ['Content-Length' => 0]),
             new Response(200, ['X-Foo' => 'Bar'],
-                '<div id="mainInner">
-                    <img class="image-frame" src="http://www.host.org/webui/Files/Room/small/my/image.jpg">
-                </div>
-                <div  class="head-dailyjournal-txt">
-                    Friday, 11 March 2016  Summary
-                    Daily Journal
-                </div>
+                '<body>
+                    <div>
+                        <h1>
+                            Friday 11 March 2016
+                        </h1>
+                        <div id="mainInner">
+                            <img class="image-frame" src="http://www.host.org/webui/Files/Room/small/my/image.jpg">
+                        </div>
+                    </div>
+                </body>
                 '
             ),
             new Response(200, ['Content-Length' => 0]),
@@ -67,6 +71,7 @@ class QkeylmTest extends TestCase
             [
                 'host' => 'http://www.host.org',
                 'page_journal' => '/journal_page',
+                'page_journal_date' => '/journal_page_print',
                 'child_name' => 'Adel',
                 'handler' => $handler
             ]
