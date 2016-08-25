@@ -141,7 +141,7 @@ class QkeylmApi
         
         // get all images and download them
         preg_match_all(
-            '|<img class="image-frame" src="(' . $this->config['host'] . '/webui/Files/Room/small/.*?)".*?>|',
+            '|<img.*? src="(' . $this->config['host'] . '/webui/Files/Room/small/.*?)".*?>|',
             $main_content,
             $images
         );
