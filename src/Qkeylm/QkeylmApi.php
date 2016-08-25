@@ -117,7 +117,8 @@ class QkeylmApi
         $url = $this->config['host'].$this->config['page_journal_date'].$date;
 
         $res = $this->getUrl($url);
-        return $this->extractContent($res->getBody());
+        $body = $res->getBody();
+        return empty($body) ? array() : $this->extractContent($body);
     }
 
     /**
