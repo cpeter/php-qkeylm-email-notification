@@ -118,6 +118,7 @@ class QkeylmApi
 
         $res = $this->getUrl($url);
         $body = $res->getBody();
+        print_r($body);
         return empty($body) ? array() : $this->extractContent($body);
     }
 
