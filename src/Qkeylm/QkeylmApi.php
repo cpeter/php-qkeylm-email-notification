@@ -118,7 +118,7 @@ class QkeylmApi
 
         $res = $this->getUrl($url);
         if ($res->getBody()) {
-            return $this->extractContent($res->getBody());
+            return $this->extractContent($res->getBody()->getContents());
         }
         return array();
     }
