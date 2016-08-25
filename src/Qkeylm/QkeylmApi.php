@@ -131,10 +131,10 @@ class QkeylmApi
      * @return array
      * @throws Exception
      */
-    public function extractContent(String $body)
+    public function extractContent($body)
     {
         // get just the main content
-        $html = HtmlDomParser::str_get_html($body);
+        $html = HtmlDomParser::str_get_html( (string) $body );
         // daily journal page div[id=mainInner]
         $main_content = $html->find('body>div', 0)->outertext;
         $main_content = $this->highlightChildName($this->config['child_name'], $main_content);
