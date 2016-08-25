@@ -79,7 +79,6 @@ class QkeylmTest extends TestCase
         $mock->shouldReceive('login')->andReturn(true);
 
         $journal =  $mock->getDailyJournal();
-
         $this->assertTrue(isset($journal['images']['http://www.host.org/webui/Files/Room/small/my/image.jpg']));
         $this->assertTrue(isset($journal['body']));
         $this->assertTrue($journal['date'] == '2016-03-11');

@@ -117,7 +117,10 @@ class QkeylmApi
         $url = $this->config['host'].$this->config['page_journal_date'].$date;
 
         $res = $this->getUrl($url);
-        return $this->extractContent($res->getBody());
+        if ($res->getBody()) {
+            return $this->extractContent($res->getBody()->getContents());
+        }
+        return array();
     }
 
     /**
@@ -131,7 +134,7 @@ class QkeylmApi
     public function extractContent($body)
     {
         // get just the main content
-        $html = HtmlDomParser::str_get_html($body);
+        $html = HtmlDomParser::str_get_html( (string) $body );
         // daily journal page div[id=mainInner]
         $main_content = $html->find('body>div', 0)->outertext;
         $main_content = $this->highlightChildName($this->config['child_name'], $main_content);
