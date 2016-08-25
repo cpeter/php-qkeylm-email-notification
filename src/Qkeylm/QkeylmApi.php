@@ -131,7 +131,7 @@ class QkeylmApi
      * @return array
      * @throws Exception
      */
-    public function extractContent($body)
+    public function extractContent(String $body)
     {
         // get just the main content
         $html = HtmlDomParser::str_get_html($body);
