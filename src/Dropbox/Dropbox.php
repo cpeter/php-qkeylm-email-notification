@@ -55,6 +55,14 @@ class Dropbox
      */
     public function upload($source_path, $dropbox_path)
     {
+        $size = null;
+        if (\stream_is_local($source_path)) {
+            $size = \filesize($source_path);
+        }
+        $fp = fopen($source_path, "rb");
+        $metadata = $this->client->uploadFile($dropbox_path, dbx\WriteMode::add(), $fp, $size);
+        fclose($fp);
+        print_r($metadata);
         print "Uploading images $source_path, $dropbox_path\n";
     }
 

@@ -161,7 +161,7 @@ class QkeylmApi
                 $content['images'][$image]['large'] = $this->fetchImage($large_image);
                 
                 // upload the image to dropbox
-                $this->dropbox->upload($content['images'][$image]['large'], './');
+                $this->dropbox->upload($content['images'][$image]['large'], '/QKeylmImages');
             }
         }
 
