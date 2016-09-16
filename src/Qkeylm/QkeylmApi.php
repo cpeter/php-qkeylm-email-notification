@@ -5,7 +5,6 @@ namespace Cpeter\PhpQkeylmEmailNotification\Qkeylm;
 use Cpeter\PhpQkeylmEmailNotification\Exception\EmptyUrlException;
 use GuzzleHttp\Exception\RequestException;
 use voku\helper\HtmlDomParser;
-use Cpeter\PhpQkeylmEmailNotification\Dropbox\Dropbox;
 
 /**
  * Class QkeylmApi
@@ -59,7 +58,6 @@ class QkeylmApi
         }
 
         $this->client = new \GuzzleHttp\Client($client_config);
-        $this->dropbox = Dropbox::getConnection($this->config);
     }
 
     /**
