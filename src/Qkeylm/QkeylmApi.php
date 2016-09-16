@@ -159,9 +159,6 @@ class QkeylmApi
                 // generate large image name
                 $large_image = str_replace('small', 'large', $image);
                 $content['images'][$image]['large'] = $this->fetchImage($large_image);
-                
-                // upload the image to dropbox
-                $this->dropbox->upload($content['images'][$image]['large'], '/QKeylmImages');
             }
         }
 
