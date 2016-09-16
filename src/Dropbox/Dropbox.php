@@ -37,6 +37,14 @@ class Dropbox
         if (self::$instance == null) {
             self::$instance = new self();
             self::$instance->client = '';
+            $accessToken = "CAHhMTWPVyoAAAAAAAAOge86IbiM8-LXJgBeLpPNVty8A2B0F2-nfpOmmZTsd2lG"; 
+            try {
+                list($accessToken, $host) = dbx\AuthInfo::loadFromJsonFile($nonOptionArgs[0]);
+            }
+            catch (dbx\AuthInfoLoadException $ex) {
+                fwrite(STDERR, "Error loading <auth-file>: ".$ex->getMessage()."\n");
+                die;
+            }
         }
 
         return static::$instance;
@@ -50,6 +58,10 @@ class Dropbox
      */
     public function upload($source_path, $dropbox_path)
     {
+        $this->client = new dbx\Client($accessToken, "examples-$exampleName", $locale, $host);
+
+        $accountInfo = $this->client->getAccountInfo();
+        print_r($accountInfo);
         print "Uploading images $source_path, $dropbox_path\n";
     }
 
