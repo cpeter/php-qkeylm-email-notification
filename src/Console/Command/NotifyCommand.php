@@ -66,7 +66,7 @@ class NotifyCommand extends Command
             $output->writeln('Page was already processed today. Giving up now.');
         }
 
-        if (!$date_already_processed) {
+        if (true || !$date_already_processed) {
             $journal = $qkeylm->getDailyJournal();
 
             // send notification and save processed status only if the returned journal is for today

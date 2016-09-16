@@ -5,6 +5,7 @@ namespace Cpeter\PhpQkeylmEmailNotification\Qkeylm;
 use Cpeter\PhpQkeylmEmailNotification\Exception\EmptyUrlException;
 use GuzzleHttp\Exception\RequestException;
 use voku\helper\HtmlDomParser;
+use Cpeter\PhpQkeylmEmailNotification\Dropbox\Dropbox;
 
 /**
  * Class QkeylmApi
@@ -58,6 +59,7 @@ class QkeylmApi
         }
 
         $this->client = new \GuzzleHttp\Client($client_config);
+        $this->dropbox = Dropbox::getConnection();
     }
 
     /**
@@ -88,7 +90,7 @@ class QkeylmApi
         $url = $this->config['host'].$this->config['page_wsingin'];
         $res = $this->postUrl($url, $post_data);
         $body = $res->getBody();
-        $this->logged_in = strpos($body, "/webui/Account/Logout") !== false;
+        $this->logged_in = strpos($body, "/webui/Account/LogOut") !== false;
 
         return $this->logged_in;
     }
@@ -157,6 +159,9 @@ class QkeylmApi
                 // generate large image name
                 $large_image = str_replace('small', 'large', $image);
                 $content['images'][$image]['large'] = $this->fetchImage($large_image);
+                
+                // upload the image to dropbox
+                $this->dropbox->upload($content['images'][$image]['large'], './');
             }
         }
 
