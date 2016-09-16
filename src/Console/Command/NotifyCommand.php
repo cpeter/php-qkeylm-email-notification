@@ -50,6 +50,8 @@ class NotifyCommand extends Command
         $configuration = $config ? Configuration::fromFile($config) : Configuration::defaults();
 
         $options = $configuration->get("QKEYLM");
+        $dropbox = $configuration->get("Dropbox");
+        $options = array_merge($options, $dropbox);
         $qkeylm = new \Cpeter\PhpQkeylmEmailNotification\Qkeylm\QkeylmApi($options);
         $storage = PhpQkeylmEmailNotification\Storage::getConnection($configuration->get("DB"));
         $alert = PhpQkeylmEmailNotification\Alert::getInstance($configuration->get("Mailer"));

@@ -59,7 +59,7 @@ class QkeylmApi
         }
 
         $this->client = new \GuzzleHttp\Client($client_config);
-        $this->dropbox = Dropbox::getConnection();
+        $this->dropbox = Dropbox::getConnection($this->config);
     }
 
     /**

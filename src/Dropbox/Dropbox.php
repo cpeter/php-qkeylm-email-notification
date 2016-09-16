@@ -32,19 +32,16 @@ class Dropbox
      * @return Storage
      * @throws \Doctrine\DBAL\DBALException
      */
-    public static function getConnection($connectionParams = array())
+    public static function getConnection($options = array())
     {
         if (self::$instance == null) {
             self::$instance = new self();
-            self::$instance->client = '';
-            $accessToken = ""; 
-            try {
-                list($accessToken, $host) = dbx\AuthInfo::loadFromJsonFile($nonOptionArgs[0]);
-            }
-            catch (dbx\AuthInfoLoadException $ex) {
-                fwrite(STDERR, "Error loading <auth-file>: ".$ex->getMessage()."\n");
-                die;
-            }
+            $accessToken = $options['access_token'];
+            $host = dbx\Host::getDefault();
+            self::$instance->client = new dbx\Client($accessToken, "QKeylm", 'en', $host);
+            
+            $accountInfo = self::$instance->client->getAccountInfo();
+            print_r($accountInfo);
         }
 
         return static::$instance;
@@ -58,10 +55,6 @@ class Dropbox
      */
     public function upload($source_path, $dropbox_path)
     {
-        $this->client = new dbx\Client($accessToken, "examples-$exampleName", $locale, $host);
-
-        $accountInfo = $this->client->getAccountInfo();
-        print_r($accountInfo);
         print "Uploading images $source_path, $dropbox_path\n";
     }
 
