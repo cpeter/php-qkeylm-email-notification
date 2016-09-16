@@ -4,6 +4,7 @@ namespace Cpeter\PhpQkeylmEmailNotification\Console\Command;
 
 use Cpeter\PhpQkeylmEmailNotification as PhpQkeylmEmailNotification;
 use Cpeter\PhpQkeylmEmailNotification\Configuration\Configuration;
+use Cpeter\PhpQkeylmEmailNotification\Dropbox\Dropbox;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -49,13 +50,11 @@ class NotifyCommand extends Command
         $config = $input->getOption('config');
         $configuration = $config ? Configuration::fromFile($config) : Configuration::defaults();
 
-        $options = $configuration->get("QKEYLM");
-        $dropbox = $configuration->get("Dropbox");
-        $options = array_merge($options, $dropbox);
-        $qkeylm = new \Cpeter\PhpQkeylmEmailNotification\Qkeylm\QkeylmApi($options);
+        $qkeylm = new PhpQkeylmEmailNotification\Qkeylm\QkeylmApi($configuration->get("QKEYLM"));
         $storage = PhpQkeylmEmailNotification\Storage::getConnection($configuration->get("DB"));
         $alert = PhpQkeylmEmailNotification\Alert::getInstance($configuration->get("Mailer"));
-
+        $dropbox = PhpQkeylmEmailNotification\Dropbox\Dropbox::getInstance($configuration->get("Dropbox"));
+        
         date_default_timezone_set($configuration->get("TimeZone", "Australia/Sydney"));
 
         $date = date("Y-m-d");
@@ -80,6 +79,12 @@ class NotifyCommand extends Command
                     $alert->send($journal);
                 } catch (Swift_TransportException $e) {
                     $output->writeln("Mail notification was not sent. ". $e->getMessage());
+                }
+                // upload the images to dropbox
+                try {
+                    $dropbox->uploadImages($journal);
+                } catch (Exception $e) {
+                    $output->writeln("Dropbox upload failed. ". $e->getMessage());
                 }
             } else {
                 $output->writeln('No entry for today at this time.');
