@@ -37,7 +37,7 @@ class Dropbox
         if (self::$instance == null) {
             self::$instance = new self();
             self::$instance->client = '';
-            $accessToken = "CAHhMTWPVyoAAAAAAAAOge86IbiM8-LXJgBeLpPNVty8A2B0F2-nfpOmmZTsd2lG"; 
+            $accessToken = ""; 
             try {
                 list($accessToken, $host) = dbx\AuthInfo::loadFromJsonFile($nonOptionArgs[0]);
             }
