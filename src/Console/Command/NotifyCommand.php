@@ -4,6 +4,7 @@ namespace Cpeter\PhpQkeylmEmailNotification\Console\Command;
 
 use Cpeter\PhpQkeylmEmailNotification as PhpQkeylmEmailNotification;
 use Cpeter\PhpQkeylmEmailNotification\Configuration\Configuration;
+use Cpeter\PhpQkeylmEmailNotification\Dropbox\Dropbox;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -28,6 +29,12 @@ class NotifyCommand extends Command
                     null,
                     InputOption::VALUE_REQUIRED,
                     'A configuration file to configure php-qkeylm-email-notification'
+                ),
+                new InputOption(
+                    'dropbox',
+                    null,
+                    InputOption::VALUE_OPTIONAL,
+                    'Uploads images to Dropbox'
                 )
             ]);
     }
@@ -49,11 +56,15 @@ class NotifyCommand extends Command
         $config = $input->getOption('config');
         $configuration = $config ? Configuration::fromFile($config) : Configuration::defaults();
 
-        $options = $configuration->get("QKEYLM");
-        $qkeylm = new \Cpeter\PhpQkeylmEmailNotification\Qkeylm\QkeylmApi($options);
+        $qkeylm = new PhpQkeylmEmailNotification\Qkeylm\QkeylmApi($configuration->get("QKEYLM"));
         $storage = PhpQkeylmEmailNotification\Storage::getConnection($configuration->get("DB"));
         $alert = PhpQkeylmEmailNotification\Alert::getInstance($configuration->get("Mailer"));
 
+        $dropbox_enabled = !empty((string)$input->getOption('dropbox'));
+        if ($dropbox_enabled) {
+            $dropbox = PhpQkeylmEmailNotification\Dropbox\Dropbox::getInstance($configuration->get("Dropbox"));
+        }
+        
         date_default_timezone_set($configuration->get("TimeZone", "Australia/Sydney"));
 
         $date = date("Y-m-d");
@@ -67,7 +78,7 @@ class NotifyCommand extends Command
         }
 
         if (!$date_already_processed) {
-            $journal = $qkeylm->getDailyJournal();
+            $journal = $qkeylm->getDailyJournal($date);
 
             // send notification and save processed status only if the returned journal is for today
             if ($journal['date'] == $date) {
@@ -78,6 +89,15 @@ class NotifyCommand extends Command
                     $alert->send($journal);
                 } catch (Swift_TransportException $e) {
                     $output->writeln("Mail notification was not sent. ". $e->getMessage());
+                }
+                if ($dropbox_enabled) {
+                    // upload the images to dropbox
+                    try {
+                        $output->writeln('Uploading files to Dropbox.');
+                        $dropbox->uploadImages($journal);
+                    } catch (Exception $e) {
+                        $output->writeln("Dropbox upload failed. " . $e->getMessage());
+                    }
                 }
             } else {
                 $output->writeln('No entry for today at this time.');

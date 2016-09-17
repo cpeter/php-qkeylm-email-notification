@@ -88,7 +88,7 @@ class QkeylmApi
         $url = $this->config['host'].$this->config['page_wsingin'];
         $res = $this->postUrl($url, $post_data);
         $body = $res->getBody();
-        $this->logged_in = strpos($body, "/webui/Account/Logout") !== false;
+        $this->logged_in = strpos($body, "/webui/Account/LogOut") !== false;
 
         return $this->logged_in;
     }

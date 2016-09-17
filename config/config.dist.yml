@@ -29,3 +29,5 @@ Mailer:
   to_name: Tiny Tots
   subject: Tiny Tots Daily Journal
 TimeZone: Australia/Sydney
+Dropbox:
+  access_token: XXXXXXXXXXXXXXXXXXXXXXXXXXX
