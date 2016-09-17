@@ -35,6 +35,19 @@ class NotifyCommand extends Command
                     null,
                     InputOption::VALUE_OPTIONAL,
                     'Uploads images to Dropbox'
+                ),
+                new InputOption(
+                    'date',
+                    null,
+                    InputOption::VALUE_OPTIONAL,
+                    'Specify a date to load the journal from. Handy to download images for a given day'
+                )
+                ,
+                new InputOption(
+                    'force',
+                    null,
+                    InputOption::VALUE_OPTIONAL,
+                    'Force processing the journal even if it was already processed'
                 )
             ]);
     }
@@ -68,16 +81,21 @@ class NotifyCommand extends Command
         date_default_timezone_set($configuration->get("TimeZone", "Australia/Sydney"));
 
         $date = date("Y-m-d");
+        if ($input->getOption('date')){
+            $date = $input->getOption('date'); 
+        }
 
+        $force = !empty($input->getOption('force')) ? true : false;
+        
         // check if current date was already processed
         $date_already_processed = $storage->checkEntry($date);
 
-        if ($date_already_processed) {
+        if (!$force && $date_already_processed) {
             // already processed
             $output->writeln('Page was already processed today. Giving up now.');
         }
 
-        if (!$date_already_processed) {
+        if ($force || !$date_already_processed) {
             $journal = $qkeylm->getDailyJournal($date);
 
             // send notification and save processed status only if the returned journal is for today
