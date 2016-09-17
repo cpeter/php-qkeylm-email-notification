@@ -28,42 +28,45 @@ class Dropbox
     /**
      * Get a singleton connection to dropbox
      *
-     * @param array $connectionParams
-     * @return Storage
-     * @throws \Doctrine\DBAL\DBALException
+     * @param array $options
+     * @return Dropbox
      */
-    public static function getConnection($options = array())
+    public static function getInstance($options = array())
     {
         if (self::$instance == null) {
             self::$instance = new self();
             $accessToken = $options['access_token'];
             $host = dbx\Host::getDefault();
             self::$instance->client = new dbx\Client($accessToken, "QKeylm", 'en', $host);
-            
-            $accountInfo = self::$instance->client->getAccountInfo();
-            print_r($accountInfo);
         }
 
         return static::$instance;
     }
 
     /**
-     * Upload a single file
+     * Upload images from the journal
      *
      * @param string $source_path
      * @param string $dropbox_path
      */
-    public function upload($source_path, $dropbox_path)
+    public function uploadImages($journal)
     {
-        $size = null;
-        if (\stream_is_local($source_path)) {
-            $size = \filesize($source_path);
+
+        $img_nr = 0;
+        foreach ($journal['images'] as $image_url => $image) {
+            $date = $journal['date'];
+            $ext = pathinfo($image_url, PATHINFO_EXTENSION);
+            $source_path = $image['large'];
+            $dropbox_path = "/$date/".$date . '-'. ++$img_nr . '-childcare.' . $ext;
+            $size = null;
+            if (\stream_is_local($source_path)) {
+                $size = \filesize($source_path);
+            }
+            $fp = fopen($source_path, "rb");
+            $this->client->uploadFile($dropbox_path, dbx\WriteMode::add(), $fp, $size);
+            fclose($fp);
         }
-        $fp = fopen($source_path, "rb");
-        $metadata = $this->client->uploadFile($dropbox_path, dbx\WriteMode::add(), $fp, $size);
-        fclose($fp);
-        print_r($metadata);
-        print "Uploading images $source_path, $dropbox_path\n";
+        
     }
 
 

@@ -29,6 +29,12 @@ class NotifyCommand extends Command
                     null,
                     InputOption::VALUE_REQUIRED,
                     'A configuration file to configure php-qkeylm-email-notification'
+                ),
+                new InputOption(
+                    'dropbox',
+                    null,
+                    InputOption::VALUE_OPTIONAL,
+                    'Uploads images to Dropbox'
                 )
             ]);
     }
@@ -53,7 +59,11 @@ class NotifyCommand extends Command
         $qkeylm = new PhpQkeylmEmailNotification\Qkeylm\QkeylmApi($configuration->get("QKEYLM"));
         $storage = PhpQkeylmEmailNotification\Storage::getConnection($configuration->get("DB"));
         $alert = PhpQkeylmEmailNotification\Alert::getInstance($configuration->get("Mailer"));
-        $dropbox = PhpQkeylmEmailNotification\Dropbox\Dropbox::getInstance($configuration->get("Dropbox"));
+
+        $dropbox_enabled = !empty((string)$input->getOption('dropbox'));
+        if ($dropbox_enabled) {
+            $dropbox = PhpQkeylmEmailNotification\Dropbox\Dropbox::getInstance($configuration->get("Dropbox"));
+        }
         
         date_default_timezone_set($configuration->get("TimeZone", "Australia/Sydney"));
 
@@ -68,7 +78,7 @@ class NotifyCommand extends Command
         }
 
         if (true || !$date_already_processed) {
-            $journal = $qkeylm->getDailyJournal();
+            $journal = $qkeylm->getDailyJournal($date);
 
             // send notification and save processed status only if the returned journal is for today
             if ($journal['date'] == $date) {
@@ -80,11 +90,14 @@ class NotifyCommand extends Command
                 } catch (Swift_TransportException $e) {
                     $output->writeln("Mail notification was not sent. ". $e->getMessage());
                 }
-                // upload the images to dropbox
-                try {
-                    $dropbox->uploadImages($journal);
-                } catch (Exception $e) {
-                    $output->writeln("Dropbox upload failed. ". $e->getMessage());
+                if ($dropbox_enabled) {
+                    // upload the images to dropbox
+                    try {
+                        $output->writeln('Uploading files to Dropbox.');
+                        $dropbox->uploadImages($journal);
+                    } catch (Exception $e) {
+                        $output->writeln("Dropbox upload failed. " . $e->getMessage());
+                    }
                 }
             } else {
                 $output->writeln('No entry for today at this time.');
