@@ -101,9 +101,11 @@ class Alert
     private function embedImages(&$message, &$body, $images)
     {
         foreach ($images as $image_url => $image) {
+            $safe_filename = str_replace('.tmp', '.jpg', $image['small']);
+            rename($image['small'], $safe_filename);
             $body = str_replace(
                 $image_url,
-                $message->embed(Swift_Image::fromPath($image['small'])),
+                $message->embed(Swift_Image::fromPath($safe_filename)),
                 $body
             );
         }
