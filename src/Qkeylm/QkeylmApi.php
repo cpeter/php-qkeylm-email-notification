@@ -88,7 +88,7 @@ class QkeylmApi
         $url = $this->config['host'].$this->config['page_wsingin'];
         $res = $this->postUrl($url, $post_data);
         $body = $res->getBody();
-        $this->logged_in = strpos($body, "/Enhanced.Eylm/Account/logout") !== false;
+        $this->logged_in = strpos($body, "/external/Star/SignOut") !== false;
 
         return $this->logged_in;
     }
