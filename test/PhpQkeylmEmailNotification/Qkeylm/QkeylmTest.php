@@ -55,7 +55,7 @@ class QkeylmTest extends TestCase
                             Friday 11 March 2016
                         </h1>
                         <div id="mainInner">
-                            <img class="image-frame" src="http://www.host.org/webui/Files/Room/small/my/image.jpg">
+                            <img class="image-frame" src="http://www.host.org/Enhanced.Eylm/Files/Room/small/my/image.jpg">
                         </div>
                     </div>
                 </body>
@@ -79,7 +79,7 @@ class QkeylmTest extends TestCase
         $mock->shouldReceive('login')->andReturn(true);
 
         $journal =  $mock->getDailyJournal();
-        $this->assertTrue(isset($journal['images']['http://www.host.org/webui/Files/Room/small/my/image.jpg']));
+        $this->assertTrue(isset($journal['images']['http://www.host.org/Enhanced.Eylm/Files/Room/small/my/image.jpg']));
         $this->assertTrue(isset($journal['body']));
         $this->assertTrue($journal['date'] == '2016-03-11');
 
