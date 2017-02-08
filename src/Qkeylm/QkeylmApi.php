@@ -88,7 +88,7 @@ class QkeylmApi
         $url = $this->config['host'].$this->config['page_wsingin'];
         $res = $this->postUrl($url, $post_data);
         $body = $res->getBody();
-        $this->logged_in = strpos($body, "/webui/Account/LogOut") !== false;
+        $this->logged_in = strpos($body, "/external/Star/SignOut") !== false;
 
         return $this->logged_in;
     }
@@ -139,12 +139,12 @@ class QkeylmApi
         $main_content = $html->find('body>div', 0)->outertext;
         $main_content = $this->highlightChildName($this->config['child_name'], $main_content);
         // embed the small image in the email
-        $main_content = str_replace("/webui/Files/Room/large/", "/webui/Files/Room/small/", $main_content);
-        $main_content = str_replace('"/webui/', '"' . $this->config['host'] . '/webui/', $main_content);
+        $main_content = str_replace("/Enhanced.Eylm/Files/Room/large/", "/Enhanced.Eylm/Files/Room/small/", $main_content);
+        $main_content = str_replace('"/Enhanced.Eylm/', '"' . $this->config['host'] . '/Enhanced.Eylm/', $main_content);
         
         // get all images and download them
         preg_match_all(
-            '|<img.*? src="(' . $this->config['host'] . '/webui/Files/Room/small/.*?)".*?>|',
+            '|<img.*? src="(' . $this->config['host'] . '/Enhanced.Eylm/Files/Room/small/.*?)".*?>|',
             $main_content,
             $images
         );

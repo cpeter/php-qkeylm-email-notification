@@ -2,12 +2,12 @@ QKEYLM:
   login: xxxxxxxxxx@yahoo.com
   password: xxxxxxxxxxxxxx
   host: https://www.qkenhanced.com.au
-  page_token: /external/Authentication/SignIn?ReturnUrl=/external/Navigation/Enhanced
-  page_wsingin: /webui/
-  child_id: 13715106
-  room_id: 3676407
-  page_journal: /webui/ProgramJournal/RedirectToPJ?ChildId=13715106&RoomId=3676407
-  page_journal_date: /webui/ProgramJournal/PrintView?date=
+  page_token: /external/Authentication/SignIn?ReturnUrl=%2Fexternal%2FStar%2FSignIn%3Fwa%3Dwsignin1.0%26wtrealm%3Dhttps%253A%252F%252Fwww.qkenhanced.com.au%252FEnhanced.Eylm%252F
+  page_wsingin: /Enhanced.Eylm/
+  child_id: 11111111
+  room_id: 22222222
+  page_journal: /Enhanced.Eylm/Child/RedirectToPortfolio/11111111?RoomId=22222222
+  page_journal_date: /Enhanced.Eylm/ProgramJournal/PrintView?date=
   child_name:
     - Adel
     - Oliver
