@@ -88,7 +88,7 @@ class QkeylmApi
         $url = $this->config['host'].$this->config['page_wsingin'];
         $res = $this->postUrl($url, $post_data);
         $body = $res->getBody();
-        $this->logged_in = strpos($body, "/external/Star/SignOut") !== false;
+        $this->logged_in = strpos($body, "/Enhanced.Eylm/Account/LogOut") !== false;
 
         return $this->logged_in;
     }
@@ -139,12 +139,12 @@ class QkeylmApi
         $main_content = $html->find('body>div', 0)->outertext;
         $main_content = $this->highlightChildName($this->config['child_name'], $main_content);
         // embed the small image in the email
-        $main_content = str_replace("/Enhanced.Eylm/Files/Room/large/", "/Enhanced.Eylm/Files/Room/small/", $main_content);
+//        $main_content = str_replace("/Enhanced.Eylm/Files/Room/large/", "/Enhanced.Eylm/Files/Room/small/", $main_content);
         $main_content = str_replace('"/Enhanced.Eylm/', '"' . $this->config['host'] . '/Enhanced.Eylm/', $main_content);
         
         // get all images and download them
         preg_match_all(
-            '|<img.*? src="(' . $this->config['host'] . '/Enhanced.Eylm/Files/Room/small/.*?)".*?>|',
+            '|<img.*? src="(' . $this->config['host'] . '/Enhanced.Eylm/Files/Room/large/.*?)".*?>|',
             $main_content,
             $images
         );
@@ -153,9 +153,12 @@ class QkeylmApi
         $content['images'] = [];
         if (isset($images[1])) {
             foreach ($images[1] as $image) {
-                $content['images'][$image]['small'] = $this->fetchImage($image);
+                // for now we'll fetch just big images
+                // $content['images'][$image]['small'] = $this->fetchImage($image);
                 // generate large image name
-                $large_image = str_replace('small', 'large', $image);
+                // $large_image = str_replace('small', 'large', $image);
+                $large_image = $image;
+                echo "$large_image\n";
                 $content['images'][$image]['large'] = $this->fetchImage($large_image);
             }
         }
@@ -217,12 +220,12 @@ class QkeylmApi
             $res = $this->client->request('POST', $url, $config);
         } catch (RequestException $e) {
             $status_code = $e->getCode();
-            throw new EmptyUrlException("URL '$url'' returned status code: $status_code. Was expecting 200.");
+            throw new EmptyUrlException("URL '$url' returned status code: $status_code. Was expecting 200.");
         }
 
         $status_code = $res->getStatusCode();
         if ($res->getStatusCode() != 200) {
-            throw new EmptyUrlException("URL '$url'' returned status code: $status_code. Was expecting 200.");
+            throw new EmptyUrlException("URL '$url returned status code: $status_code. Was expecting 200.");
         }
         return $res;
     }
@@ -247,7 +250,7 @@ class QkeylmApi
             $res = $this->client->get($url, $config);
         } catch (RequestException $e) {
             $status_code = $e->getCode();
-            throw new EmptyUrlException("URL '$url'' returned status code: $status_code. Was expecting 200.");
+            throw new EmptyUrlException("URL '$url' returned status code: $status_code. Was expecting 200.");
         }
 
         $status_code = $res->getStatusCode();

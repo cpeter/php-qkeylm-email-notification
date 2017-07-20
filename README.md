@@ -50,4 +50,4 @@ If you want to contribute to this project feel free to make PR's.
 Definiteluy more unit tests needs to be added to the project, so feel free to make PR's for that.
 Any other improvement suggestions as welcome.
 
-Run ```ant``` for alvailable commands.
+Run ```ant``` for available commands.
