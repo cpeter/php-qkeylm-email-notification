@@ -158,7 +158,6 @@ class QkeylmApi
                 // generate large image name
                 // $large_image = str_replace('small', 'large', $image);
                 $large_image = $image;
-                echo "$large_image\n";
                 $content['images'][$image]['large'] = $this->fetchImage($large_image);
             }
         }
