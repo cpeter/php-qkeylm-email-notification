@@ -54,9 +54,11 @@ class Dropbox
 
         $img_nr = 0;
         foreach ($journal['images'] as $image_url => $image) {
+
             $date = $journal['date'];
             $ext = pathinfo($image_url, PATHINFO_EXTENSION);
-            $source_path = $image['large'];
+            // had to add .jpg since the client will add the extension automatically for some unknown reason
+            $source_path = $image['large'].'.jpg';
             $dropbox_path = "/$date/".$date . '-'. ++$img_nr . '-childcare.' . $ext;
             $size = null;
             if (\stream_is_local($source_path)) {
@@ -65,6 +67,7 @@ class Dropbox
             $fp = fopen($source_path, "rb");
             $this->client->uploadFile($dropbox_path, dbx\WriteMode::add(), $fp, $size);
             fclose($fp);
+
         }
         
     }

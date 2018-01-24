@@ -198,7 +198,7 @@ class QkeylmApi
             throw new Exception('Unable to fetch the image to make it attachable, sys_temp_dir is not writable');
         }
 
-        $this->getUrl($url, ['save_to' => $tmpFile]);
+        $this->getUrl($url, ['sink' => $tmpFile]);
 
         return $tmpFile;
     }
