@@ -11,6 +11,15 @@ QKEYLM:
   child_name:
     - Adel
     - Oliver
+Kinderloop:
+  login: xxxxxxxxxx@yahoo.com
+  password: xxxxxxxxxxxxxx
+  host: https://app.kinderloop.com/api
+  feed: /feed/parent/?offset=0&max=5
+  feed_details: /post/
+  child_id: 22222222
+  child_name:
+    - Adel
 DB:
   driver: pdo_sqlite
   path: ../store/store.sqlite3

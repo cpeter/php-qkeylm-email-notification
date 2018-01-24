@@ -4,7 +4,6 @@ namespace Cpeter\PhpQkeylmEmailNotification\Kinderloop;
 
 use Cpeter\PhpQkeylmEmailNotification\Exception\EmptyUrlException;
 use GuzzleHttp\Exception\RequestException;
-use voku\helper\HtmlDomParser;
 
 /**
  * Class KinderloopApi
@@ -77,7 +76,8 @@ class KinderloopApi
     /**
      * Fetch the daily journal.
      *
-     * @todo upon request this methos could be improved to accept a date the journal to be fetched from
+     * We can't filter by date so I'll fetch the last 5 items. Usually there is max 2 entries per day anyway
+     *
      * @param string $date
      * @return mixed
      * @throws EmptyUrlException
@@ -109,6 +109,7 @@ class KinderloopApi
      * All embeded images are downloaded locally.
      *
      * @param string $body
+     * @param date $date
      * @return array
      * @throws Exception
      */
@@ -118,56 +119,60 @@ class KinderloopApi
         $body_obj = json_decode($body);
 
         $main_content = '';
+        $images = [];
 
         // get the stories for each day and see if there is anything for today
         foreach($body_obj as $feed){
-            $feed_date = date("Y-m-d", $feed->created);
+
+            // get the post details since the feed has max 4 images and limited body
+            $post_id = $feed->id;
+            $url = $this->config['host'].$this->config['feed_details'].$post_id;
+            $config = $this->getAuthToken();
+            $res = $this->getUrl($url, $config);
+            if ($res->getBody()) {
+                $feed_details = json_decode($res->getBody()->getContents());
+            } else {
+                // something went wrong, try the next post
+                continue;
+            }
+
+            $feed_date = date("Y-m-d", $feed_details->created);
 
             if ($feed_date == $date){
-                $main_content .= $feed->body . "\n\n";
+                $feed_content = "<p>". $feed_details->body . "</p>\n\n";
 
-                $images[] = '';
+                foreach($feed_details->photos as $photo){
+                    $images[] = $photo->location.'/'.$photo->filename.'_o.'.$photo->ext;
+                    // add the images to the top of the content body
+                    $feed_content = '<img src="'.$images[count($images)-1].'" />' . $feed_content;
+                }
+
+                $main_content .= $feed_content;
             }
         }
 
         $main_content = $this->highlightChildName($this->config['child_name'], $main_content);
-        // embed the small image in the email
-        $main_content = str_replace('"/Enhanced.Eylm/', '"' . $this->config['host'] . '/Enhanced.Eylm/', $main_content);
 
-
-        // add images to the content body
-
-
-        // get all images and download them
-        preg_match_all(
-            '|<img.*? src="(' . $this->config['host'] . '/Enhanced.Eylm/Files/Room/large/.*?)".*?>|',
-            $main_content,
-            $images
-        );
 
         // process the images if there is any
         $content['images'] = [];
-        if (isset($images[1])) {
-            foreach ($images[1] as $image) {
-                // for now we'll fetch just big images
-                // $content['images'][$image]['small'] = $this->fetchImage($image);
-                // generate large image name
-                // $large_image = str_replace('small', 'large', $image);
-                $large_image = $image;
-                $content['images'][$image]['large'] = $this->fetchImage($large_image);
-            }
+        foreach ($images as $image) {
+            // for now we'll fetch just big images
+            // $content['images'][$image]['small'] = $this->fetchImage($image);
+            // generate large image name
+            // $large_image = str_replace('small', 'large', $image);
+            $large_image = $image;
+            $content['images'][$image]['large'] = $this->fetchImage($large_image);
         }
 
-        // add some inline style to be used by the email client
-        $main_content = $this->addStyles($main_content);
-        $content['body'] = $main_content;
+        if (!empty($main_content)) {
+            // add some inline style to be used by the email client
+            $main_content = $this->addStyles($main_content);
+            $content['body'] = $main_content;
 
-        // get the date the journal is from
-        // daily journal selector: div[class=head-dailyjournal-txt]
-        $date = $html->find('h1', 0)->innertext;
-        // remove some extra content
-        $date = preg_replace("|(\d{4}).*$|", "$1", $date);
-        $content['date'] = date("Y-m-d", strtotime(trim($date)));
+            // get the date the journal is from
+            $content['date'] = $date;
+        }
 
         return  $content;
     }
@@ -295,26 +300,6 @@ class KinderloopApi
     private function addStyles($html)
     {
         // hacking some style to the body for journal page
-        $html = str_replace('class="programjournal-smallimg"', 'style="float: left; margin-right: 10px"', $html);
-        $html = str_replace(
-            'class="gaurav_ratiocinative_main_pic_gallery-smallimg"',
-            'style="float: none; clear: both"',
-            $html
-        );
-        $html = str_replace('<ul>', '<ul style="list-style-type: none;  margin: 0; padding: 0;">', $html);
-
-        // hacking some style to the *print* body for yournal page
-        $html = str_replace('class="detailcontRes"', 'style="float: left; margin-right: 10px"', $html);
-        $html = str_replace(
-            'class="ratiocinative_pic_gallery"',
-            'style="float: none; clear: both"',
-            $html
-        );
-        $html = str_replace(
-            '<ul class=&#39;img-listview&#39;>',
-            '<ul style="list-style-type: none;  margin: 0; padding: 0;">',
-            $html
-        );
         return $html;
     }
 }

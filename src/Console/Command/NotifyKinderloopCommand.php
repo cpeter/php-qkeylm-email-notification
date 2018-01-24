@@ -22,7 +22,7 @@ class NotifyKinderloopCommand extends Command
     {
         $this
             ->setName('notify')
-            ->setDescription('Checks the Qkeylm (childcare) portal and send an email notification of the daily journal')
+            ->setDescription('Checks the Kinderloop (childcare) portal and send an email notification of the daily journal')
             ->setDefinition([
                 new InputOption(
                     'config',
