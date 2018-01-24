@@ -12,7 +12,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Swift_TransportException;
 
-class NotifyCommand extends Command
+class NotifyKinderloopCommand extends Command
 {
 
     /**
@@ -21,14 +21,14 @@ class NotifyCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('notify-qkeylm')
+            ->setName('notify')
             ->setDescription('Checks the Qkeylm (childcare) portal and send an email notification of the daily journal')
             ->setDefinition([
                 new InputOption(
                     'config',
                     null,
                     InputOption::VALUE_REQUIRED,
-                    'A configuration file to configure php-qkeylm-email-notification'
+                    'A configuration file to configure php-kinderloop-email-notification'
                 ),
                 new InputOption(
                     'dropbox',
@@ -54,7 +54,7 @@ class NotifyCommand extends Command
 
     /**
      * Check if we have already processed the daily journal for today
-     * If not login to the qkeylm site and download the journal
+     * If not login to the kinderloop site and download the journal
      * Download all images
      * Send out the notification email with the images as attachement
      * Mark journal as processed
@@ -69,7 +69,7 @@ class NotifyCommand extends Command
         $config = $input->getOption('config');
         $configuration = $config ? Configuration::fromFile($config) : Configuration::defaults();
 
-        $qkeylm = new PhpQkeylmEmailNotification\Qkeylm\QkeylmApi($configuration->get("QKEYLM"));
+        $kinderloop = new PhpQkeylmEmailNotification\Kinderloop\KinderloopApi($configuration->get("Kinderloop"));
         $storage = PhpQkeylmEmailNotification\Storage::getConnection($configuration->get("DB"));
         $alert = PhpQkeylmEmailNotification\Alert::getInstance($configuration->get("Mailer"));
 
@@ -96,7 +96,7 @@ class NotifyCommand extends Command
         }
 
         if ($force || !$date_already_processed) {
-            $journal = $qkeylm->getDailyJournal($date);
+            $journal = $kinderloop->getDailyJournal($date);
 
             // send notification and save processed status only if the returned journal is for today
             if ($journal['date'] == $date) {
