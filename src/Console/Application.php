@@ -4,6 +4,7 @@ namespace Cpeter\PhpQkeylmEmailNotification\Console;
 
 use Symfony\Component\Console\Application as SymfonyApplication;
 use Cpeter\PhpQkeylmEmailNotification\Console\Command\NotifyCommand;
+use Cpeter\PhpQkeylmEmailNotification\Console\Command\NotifyKinderloopCommand;
 
 class Application extends SymfonyApplication
 {
@@ -49,6 +50,7 @@ class Application extends SymfonyApplication
     {
         $commands = parent::getDefaultCommands();
         $commands[] = $this->add(new NotifyCommand());
+        $commands[] = $this->add(new NotifyKinderloopCommand());
         return $commands;
     }
 }
