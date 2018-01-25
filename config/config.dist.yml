@@ -15,6 +15,7 @@ Kinderloop:
   login: xxxxxxxxxx@yahoo.com
   password: xxxxxxxxxxxxxx
   host: https://app.kinderloop.com/api
+  auth: /authenticate/v2
   feed: /feed/parent/?offset=0&max=5
   feed_details: /post/
   child_id: 22222222
@@ -39,4 +40,6 @@ Mailer:
   subject: Tiny Tots Daily Journal
 TimeZone: Australia/Sydney
 Dropbox:
+  client_id: XXXXXXXXXXXXXXXXXXXXXXXXXXX
+  client_secret: XXXXXXXXXXXXXXXXXXXXXXXXXXX
   access_token: XXXXXXXXXXXXXXXXXXXXXXXXXXX
