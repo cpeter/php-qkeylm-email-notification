@@ -10,7 +10,8 @@ namespace Cpeter\PhpQkeylmEmailNotification\Dropbox;
  * @package Cpeter\PhpQkeylmEmailNotification
  */
 
-use \Dropbox as dbx;
+use \Kunnu\Dropbox\DropboxApp;
+use \Kunnu\Dropbox\Dropbox as dropboxapi;
 
 class Dropbox
 {
@@ -35,9 +36,13 @@ class Dropbox
     {
         if (self::$instance == null) {
             self::$instance = new self();
+
+            $client_id = $options['client_id'];
+            $client_secret = $options['client_secret'];
             $accessToken = $options['access_token'];
-            $host = dbx\Host::getDefault();
-            self::$instance->client = new dbx\Client($accessToken, "QKeylm", 'en', $host);
+
+            $app = new DropboxApp($client_id, $client_secret, $accessToken);
+            self::$instance->client = new dropboxapi($app);
         }
 
         return static::$instance;
@@ -60,13 +65,8 @@ class Dropbox
             // had to add .jpg since the client will add the extension automatically for some unknown reason
             $source_path = $image['large'].'.jpg';
             $dropbox_path = "/$date/".$date . '-'. ++$img_nr . '-childcare.' . $ext;
-            $size = null;
-            if (\stream_is_local($source_path)) {
-                $size = \filesize($source_path);
-            }
-            $fp = fopen($source_path, "rb");
-            $this->client->uploadFile($dropbox_path, dbx\WriteMode::add(), $fp, $size);
-            fclose($fp);
+
+            $this->client->upload($source_path, $dropbox_path, ['autorename' => true]);
 
         }
         
